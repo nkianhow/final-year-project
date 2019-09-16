@@ -92,7 +92,7 @@ function askProceed() {
 # Obtain CONTAINER_IDS and remove them
 # TODO Might want to make this optional - could clear other containers
 function clearContainers() {
-  CONTAINER_IDS=$(docker ps -a | awk '($2 ~ /dev-peer.*.someChaincodeName.*/) {print $1}')
+  CONTAINER_IDS=$(docker ps -a | awk '($2 ~ /dev-peer.*.*.*/) {print $1}')
   if [ -z "$CONTAINER_IDS" -o "$CONTAINER_IDS" == " " ]; then
     echo "---- No containers available for deletion ----"
   else
@@ -104,7 +104,7 @@ function clearContainers() {
 # specifically the following images are often left behind:
 # TODO list generated image naming patterns
 function removeUnwantedImages() {
-  DOCKER_IMAGE_IDS=$(docker images | awk '($1 ~ /dev-peer.*.someChaincodeName.*/) {print $3}')
+  DOCKER_IMAGE_IDS=$(docker images | awk '($1 ~ /dev-peer.*.*.*/) {print $3}')
   if [ -z "$DOCKER_IMAGE_IDS" -o "$DOCKER_IMAGE_IDS" == " " ]; then
     echo "---- No images available for deletion ----"
   else
@@ -159,47 +159,44 @@ function networkUp() {
     generateChannelArtifacts
   fi
   COMPOSE_FILES="-f ${COMPOSE_FILE}"
-
-  # if [ "${CERTIFICATE_AUTHORITIES}" == "true" ]; then
-  #   COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_CA}"
-  #   export BYFN_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-  #   export BYFN_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
-  # fi
-  # if [ "${CONSENSUS_TYPE}" == "kafka" ]; then
-  #   COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_KAFKA}"
-  # elif [ "${CONSENSUS_TYPE}" == "etcdraft" ]; then
-  #   COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_RAFT2}"
-  # fi
-  # if [ "${IF_COUCHDB}" == "couchdb" ]; then
-  #   COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_COUCH}"
-  # fi
+  if [ "${CERTIFICATE_AUTHORITIES}" == "true" ]; then
+    COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_CA}"
+    export BYFN_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
+    export BYFN_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+  fi
+  if [ "${CONSENSUS_TYPE}" == "kafka" ]; then
+    COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_KAFKA}"
+  elif [ "${CONSENSUS_TYPE}" == "etcdraft" ]; then
+    COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_RAFT2}"
+  fi
+  if [ "${IF_COUCHDB}" == "couchdb" ]; then
+    COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_COUCH}"
+  fi
   IMAGE_TAG=$IMAGETAG docker-compose ${COMPOSE_FILES} up -d 2>&1
   docker ps -a
   if [ $? -ne 0 ]; then
     echo "ERROR !!!! Unable to start network"
     exit 1
-  else
-    echo "Network is up!"
   fi
 
-  # if [ "$CONSENSUS_TYPE" == "kafka" ]; then
-  #   sleep 1
-  #   echo "Sleeping 10s to allow $CONSENSUS_TYPE cluster to complete booting"
-  #   sleep 9
-  # fi
+  if [ "$CONSENSUS_TYPE" == "kafka" ]; then
+    sleep 1
+    echo "Sleeping 10s to allow $CONSENSUS_TYPE cluster to complete booting"
+    sleep 9
+  fi
 
-  # if [ "$CONSENSUS_TYPE" == "etcdraft" ]; then
-  #   sleep 1
-  #   echo "Sleeping 15s to allow $CONSENSUS_TYPE cluster to complete booting"
-  #   sleep 14
-  # fi
+  if [ "$CONSENSUS_TYPE" == "etcdraft" ]; then
+    sleep 1
+    echo "Sleeping 15s to allow $CONSENSUS_TYPE cluster to complete booting"
+    sleep 14
+  fi
 
-  # # now run the end to end script
-  # docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE $NO_CHAINCODE
-  # if [ $? -ne 0 ]; then
-  #   echo "ERROR !!!! Test failed"
-  #   exit 1
-  # fi
+  # now run the end to end script
+  docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE $NO_CHAINCODE
+  if [ $? -ne 0 ]; then
+    echo "ERROR !!!! Test failed"
+    exit 1
+  fi
 }
 
 # Upgrade the network components which are at version 1.3.x to 1.4.x
@@ -264,7 +261,7 @@ function upgradeNetwork() {
       docker-compose $COMPOSE_FILES up -d --no-deps $PEER
     done
 
-    docker exec cli scripts/upgrade_to_v14.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE
+    docker exec cli sh -c "SYS_CHANNEL=$CH_NAME && scripts/upgrade_to_v14.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE"    
     if [ $? -ne 0 ]; then
       echo "ERROR !!!! Test failed"
       exit 1
@@ -278,9 +275,7 @@ function upgradeNetwork() {
 function networkDown() {
   # stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3
   # stop kafka and zookeeper containers in case we're running with kafka consensus-type
-  # docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_KAFKA -f $COMPOSE_FILE_RAFT2 -f $COMPOSE_FILE_CA -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans
-
-  docker-compose -f $COMPOSE_FILE down --volumes --remove-orphans
+  docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_KAFKA -f $COMPOSE_FILE_RAFT2 -f $COMPOSE_FILE_CA -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans
 
   # Don't remove the generated artifacts -- note, the ledgers are always removed
   if [ "$MODE" != "restart" ]; then
@@ -372,6 +367,8 @@ function generateCerts() {
     exit 1
   fi
   echo
+  echo "Generate CCP files for Org1 and Org2"
+  ./ccp-generate.sh
 }
 
 # The `configtxgen tool is used to create four artifacts: orderer **bootstrap
@@ -458,38 +455,32 @@ function generateChannelArtifacts() {
 
   echo
   echo "#################################################################"
-  echo "#######    Generating anchor peer update for MyOrgMSP   ##########"
+  echo "#######    Generating anchor peer update for Org1MSP   ##########"
   echo "#################################################################"
   set -x
-  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/MyOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg MyOrgMSP
+  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
   res=$?
   set +x
   if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for MyOrgMSP..."
+    echo "Failed to generate anchor peer update for Org1MSP..."
     exit 1
   fi
 
   echo
   echo "#################################################################"
-  echo "#######    Generating anchor peer update for AnotherOrgMSP   ##########"
+  echo "#######    Generating anchor peer update for Org2MSP   ##########"
   echo "#################################################################"
   set -x
   configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate \
-    ./channel-artifacts/AnotherOrgMSPanchors.tx -channelID $CHANNEL_NAME -asOrg AnotherOrgMSP
+    ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
   res=$?
   set +x
   if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for AnotherOrgMSP..."
+    echo "Failed to generate anchor peer update for Org2MSP..."
     exit 1
   fi
   echo
 }
-
-####################################
-#                                  #
-# Setting Of Environment Variables #
-#                                  #
-####################################
 
 # Obtain the OS and Architecture string that will be used to select the correct
 # native binaries for your platform, e.g., darwin-amd64 or linux-amd64
@@ -500,24 +491,22 @@ CLI_TIMEOUT=10
 # default for delay between commands
 CLI_DELAY=3
 # system channel name defaults to "byfn-sys-channel"
-SYS_CHANNEL="SomeSystemChannelName-sys-channel"
+SYS_CHANNEL="byfn-sys-channel"
 # channel name defaults to "mychannel"
-CHANNEL_NAME="internal-channel"
+CHANNEL_NAME="mychannel"
 # use this as the default docker-compose yaml definition
 COMPOSE_FILE=docker-compose-cli.yaml
-
-# #
-# COMPOSE_FILE_COUCH=docker-compose-couch.yaml
-# # org3 docker compose file
-# COMPOSE_FILE_ORG3=docker-compose-org3.yaml
-# # kafka and zookeeper compose file
-# COMPOSE_FILE_KAFKA=docker-compose-kafka.yaml
-# # two additional etcd/raft orderers
-# COMPOSE_FILE_RAFT2=docker-compose-etcdraft2.yaml
-# # certificate authorities compose file
-# COMPOSE_FILE_CA=docker-compose-ca.yaml
-# #
-
+#
+COMPOSE_FILE_COUCH=docker-compose-couch.yaml
+# org3 docker compose file
+COMPOSE_FILE_ORG3=docker-compose-org3.yaml
+# kafka and zookeeper compose file
+COMPOSE_FILE_KAFKA=docker-compose-kafka.yaml
+# two additional etcd/raft orderers
+COMPOSE_FILE_RAFT2=docker-compose-etcdraft2.yaml
+# certificate authorities compose file
+COMPOSE_FILE_CA=docker-compose-ca.yaml
+#
 # use golang as the default language for chaincode
 LANGUAGE=golang
 # default image tag
