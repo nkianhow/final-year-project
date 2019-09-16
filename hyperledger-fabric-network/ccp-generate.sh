@@ -5,45 +5,34 @@ function one_line_pem {
 }
 
 function json_ccp {
-    local PP=$(one_line_pem $5)
-    local CP=$(one_line_pem $6)
-    sed -e "s/\${ORG}/$1/" \
-        -e "s/\${P0PORT}/$2/" \
-        -e "s/\${P1PORT}/$3/" \
-        -e "s/\${CAPORT}/$4/" \
+    local PP=$(one_line_pem $6)
+    local CP=$(one_line_pem $7)
+    sed -e "s/\${ORGMSP}/$1/" \
+        -e "s/\${ORG}/$2/" \
+        -e "s/\${P0PORT}/$3/" \
+        -e "s/\${P1PORT}/$4/" \
+        -e "s/\${CAPORT}/$5/" \
         -e "s#\${PEERPEM}#$PP#" \
         -e "s#\${CAPEM}#$CP#" \
         ccp-template.json 
 }
 
-function yaml_ccp {
-    local PP=$(one_line_pem $5)
-    local CP=$(one_line_pem $6)
-    sed -e "s/\${ORG}/$1/" \
-        -e "s/\${P0PORT}/$2/" \
-        -e "s/\${P1PORT}/$3/" \
-        -e "s/\${CAPORT}/$4/" \
-        -e "s#\${PEERPEM}#$PP#" \
-        -e "s#\${CAPEM}#$CP#" \
-        ccp-template.yaml | sed -e $'s/\\\\n/\\\n        /g'
-}
-
-ORG=1
+ORGMSP="Provider"
+ORG="provider"
 P0PORT=7051
 P1PORT=8051
 CAPORT=7054
 PEERPEM=crypto-config/peerOrganizations/provider.example.com/tlsca/tlsca.provider.example.com-cert.pem
 CAPEM=crypto-config/peerOrganizations/provider.example.com/ca/ca.provider.example.com-cert.pem
 
-echo "$(json_ccp $ORG $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > connection-provider.json
-echo "$(yaml_ccp $ORG $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > connection-provider.yaml
+echo "$(json_ccp $ORGMSP $ORG $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > connection-provider.json
 
-ORG=2
+ORGMSP="Consumer"
+ORG="consumer"
 P0PORT=9051
 P1PORT=10051
 CAPORT=8054
 PEERPEM=crypto-config/peerOrganizations/consumer.example.com/tlsca/tlsca.consumer.example.com-cert.pem
 CAPEM=crypto-config/peerOrganizations/consumer.example.com/ca/ca.consumer.example.com-cert.pem
 
-echo "$(json_ccp $ORG $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > connection-consumer.json
-echo "$(yaml_ccp $ORG $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > connection-consumer.yaml
+echo "$(json_ccp $ORGMSP $ORG $P0PORT $P1PORT $CAPORT $PEERPEM $CAPEM)" > connection-consumer.json
