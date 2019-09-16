@@ -28,10 +28,10 @@ OrdererOrgs:
 # ---------------------------------------------------------------------------
 PeerOrgs:
   # ---------------------------------------------------------------------------
-  # Org1
+  # Provider
   # ---------------------------------------------------------------------------
-  - Name: Org1
-    Domain: org1.example.com
+  - Name: Provider
+    Domain: provider.example.com
     EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
@@ -50,7 +50,7 @@ PeerOrgs:
     #                 Org.Domain, respectively.
     # ---------------------------------------------------------------------------
     # Specs:
-    #   - Hostname: foo # implicitly "foo.org1.example.com"
+    #   - Hostname: foo # implicitly "foo.provider.example.com"
     #     CommonName: foo27.org5.example.com # overrides Hostname-based FQDN set above
     #   - Hostname: bar
     #   - Hostname: baz
@@ -78,10 +78,10 @@ PeerOrgs:
     Users:
       Count: 1
   # ---------------------------------------------------------------------------
-  # Org2: See "Org1" for full specification
+  # Consumer: See "Provider" for full specification
   # ---------------------------------------------------------------------------
-  - Name: Org2
-    Domain: org2.example.com
+  - Name: Consumer
+    Domain: consumer.example.com
     EnableNodeOUs: true
     Template:
       Count: 2

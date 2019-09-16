@@ -161,8 +161,8 @@ function networkUp() {
   COMPOSE_FILES="-f ${COMPOSE_FILE}"
   if [ "${CERTIFICATE_AUTHORITIES}" == "true" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_CA}"
-    export BYFN_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-    export BYFN_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+    export BYFN_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/provider.example.com/ca && ls *_sk)
+    export BYFN_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/consumer.example.com/ca && ls *_sk)
   fi
   if [ "${CONSENSUS_TYPE}" == "kafka" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_KAFKA}"
@@ -219,8 +219,8 @@ function upgradeNetwork() {
     COMPOSE_FILES="-f ${COMPOSE_FILE}"
     if [ "${CERTIFICATE_AUTHORITIES}" == "true" ]; then
       COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_CA}"
-      export BYFN_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-      export BYFN_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+      export BYFN_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/provider.example.com/ca && ls *_sk)
+      export BYFN_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/consumer.example.com/ca && ls *_sk)
     fi
     if [ "${CONSENSUS_TYPE}" == "kafka" ]; then
       COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_KAFKA}"
@@ -240,7 +240,7 @@ function upgradeNetwork() {
     docker cp -a orderer.example.com:/var/hyperledger/production/orderer $LEDGERS_BACKUP/orderer.example.com
     docker-compose $COMPOSE_FILES up -d --no-deps orderer.example.com
 
-    for PEER in peer0.org1.example.com peer1.org1.example.com peer0.org2.example.com peer1.org2.example.com; do
+    for PEER in peer0.provider.example.com peer1.provider.example.com peer0.consumer.example.com peer1.consumer.example.com; do
       echo "Upgrading peer $PEER"
 
       # Stop the peer and backup its ledger
@@ -273,7 +273,7 @@ function upgradeNetwork() {
 
 # Tear down running network
 function networkDown() {
-  # stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3
+  # stop org3 containers also in addition to provider and consumer, in case we were running sample to add org3
   # stop kafka and zookeeper containers in case we're running with kafka consensus-type
   docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_KAFKA -f $COMPOSE_FILE_RAFT2 -f $COMPOSE_FILE_CA -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans
 
@@ -312,11 +312,11 @@ function replacePrivateKey() {
   # The next steps will replace the template's contents with the
   # actual values of the private key file names for the two CAs.
   CURRENT_DIR=$PWD
-  cd crypto-config/peerOrganizations/org1.example.com/ca/
+  cd crypto-config/peerOrganizations/provider.example.com/ca/
   PRIV_KEY=$(ls *_sk)
   cd "$CURRENT_DIR"
   sed $OPTS "s/CA1_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
-  cd crypto-config/peerOrganizations/org2.example.com/ca/
+  cd crypto-config/peerOrganizations/consumer.example.com/ca/
   PRIV_KEY=$(ls *_sk)
   cd "$CURRENT_DIR"
   sed $OPTS "s/CA2_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
@@ -367,7 +367,7 @@ function generateCerts() {
     exit 1
   fi
   echo
-  echo "Generate CCP files for Org1 and Org2"
+  echo "Generate CCP files for Provider and Consumer"
   ./ccp-generate.sh
 }
 
@@ -382,7 +382,7 @@ function generateCerts() {
 #
 # Configtxgen consumes a file - ``configtx.yaml`` - that contains the definitions
 # for the sample network. There are three members - one Orderer Org (``OrdererOrg``)
-# and two Peer Orgs (``Org1`` & ``Org2``) each managing and maintaining two peer nodes.
+# and two Peer Orgs (``Provider`` & ``Consumer``) each managing and maintaining two peer nodes.
 # This file also specifies a consortium - ``SampleConsortium`` - consisting of our
 # two Peer Orgs.  Pay specific attention to the "Profiles" section at the top of
 # this file.  You will notice that we have two unique headers. One for the orderer genesis
@@ -390,7 +390,7 @@ function generateCerts() {
 # These headers are important, as we will pass them in as arguments when we create
 # our artifacts.  This file also contains two additional specifications that are worth
 # noting.  Firstly, we specify the anchor peers for each Peer Org
-# (``peer0.org1.example.com`` & ``peer0.org2.example.com``).  Secondly, we point to
+# (``peer0.provider.example.com`` & ``peer0.consumer.example.com``).  Secondly, we point to
 # the location of the MSP directory for each member, in turn allowing us to store the
 # root certificates for each Org in the orderer genesis block.  This is a critical
 # concept. Now any network entity communicating with the ordering service can have
@@ -455,28 +455,28 @@ function generateChannelArtifacts() {
 
   echo
   echo "#################################################################"
-  echo "#######    Generating anchor peer update for Org1MSP   ##########"
+  echo "#######    Generating anchor peer update for ProviderMSP   ##########"
   echo "#################################################################"
   set -x
-  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/ProviderMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ProviderMSP
   res=$?
   set +x
   if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for Org1MSP..."
+    echo "Failed to generate anchor peer update for ProviderMSP..."
     exit 1
   fi
 
   echo
   echo "#################################################################"
-  echo "#######    Generating anchor peer update for Org2MSP   ##########"
+  echo "#######    Generating anchor peer update for ConsumerMSP   ##########"
   echo "#################################################################"
   set -x
   configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate \
-    ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
+    ./channel-artifacts/ConsumerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg ConsumerMSP
   res=$?
   set +x
   if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for Org2MSP..."
+    echo "Failed to generate anchor peer update for ConsumerMSP..."
     exit 1
   fi
   echo

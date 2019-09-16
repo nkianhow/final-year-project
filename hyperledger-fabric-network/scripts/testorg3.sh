@@ -47,20 +47,20 @@ echo "Channel name : "$CHANNEL_NAME
 echo "Querying chaincode on peer0.org3..."
 chaincodeQuery 0 3 90
 
-# Invoke chaincode on peer0.org1, peer0.org2, and peer0.org3
-echo "Sending invoke transaction on peer0.org1 peer0.org2 peer0.org3..."
+# Invoke chaincode on peer0.provider, peer0.consumer, and peer0.org3
+echo "Sending invoke transaction on peer0.provider peer0.consumer peer0.org3..."
 chaincodeInvoke 0 1 0 2 0 3
 
-# Query on chaincode on peer0.org3, peer0.org2, peer0.org1 check if the result is 80
+# Query on chaincode on peer0.org3, peer0.consumer, peer0.provider check if the result is 80
 # We query a peer in each organization, to ensure peers from all organizations are in sync
 # and there is no state fork between organizations.
 echo "Querying chaincode on peer0.org3..."
 chaincodeQuery 0 3 80
 
-echo "Querying chaincode on peer0.org2..."
+echo "Querying chaincode on peer0.consumer..."
 chaincodeQuery 0 2 80
 
-echo "Querying chaincode on peer0.org1..."
+echo "Querying chaincode on peer0.provider..."
 chaincodeQuery 0 1 80
 
 

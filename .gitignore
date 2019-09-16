@@ -3,3 +3,9 @@ web-application/package-lock.json
 web-application/hfc-key-store/
 chaincode/node_modules/
 chaincode/package-lock.json
+hyperledger-fabric-network/channel-artifacts/
+hyperledger-fabric-network/crypto-config
+hyperledger-fabric-network/docker-compose-e2e.yaml
+hyperledger-fabric-network/connection-*.*
+
+

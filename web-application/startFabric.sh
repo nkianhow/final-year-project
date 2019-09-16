@@ -17,22 +17,22 @@ CC_SRC_PATH=/opt/gopath/src/github.com/chaincode
 rm -rf ./hfc-key-store
 
 # launch network; create channel and join peer to channel
-cd ../test-network
+cd ../hyperledger-fabric-network
 echo y | ./byfn.sh down
 echo y | ./byfn.sh up -a -n -s couchdb
 
 CONFIG_ROOT=/opt/gopath/src/github.com/hyperledger/fabric/peer
-ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-ORG1_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-ORG2_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/crypto/peerOrganizations/provider.example.com/users/Admin@provider.example.com/msp
+ORG1_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/crypto/peerOrganizations/provider.example.com/peers/peer0.provider.example.com/tls/ca.crt
+ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/crypto/peerOrganizations/consumer.example.com/users/Admin@consumer.example.com/msp
+ORG2_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/crypto/peerOrganizations/consumer.example.com/peers/peer0.consumer.example.com/tls/ca.crt
 ORDERER_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 set -x
 
-echo "Installing smart contract on peer0.org1.example.com"
+echo "Installing smart contract on peer0.provider.example.com"
 docker exec \
-  -e CORE_PEER_LOCALMSPID=Org1MSP \
-  -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 \
+  -e CORE_PEER_LOCALMSPID=ProviderMSP \
+  -e CORE_PEER_ADDRESS=peer0.provider.example.com:7051 \
   -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH} \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE} \
   cli \
@@ -42,10 +42,10 @@ docker exec \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
 
-echo "Installing smart contract on peer1.org1.example.com"
+echo "Installing smart contract on peer1.provider.example.com"
 docker exec \
-  -e CORE_PEER_LOCALMSPID=Org1MSP \
-  -e CORE_PEER_ADDRESS=peer1.org1.example.com:8051 \
+  -e CORE_PEER_LOCALMSPID=ProviderMSP \
+  -e CORE_PEER_ADDRESS=peer1.provider.example.com:8051 \
   -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH} \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE} \
   cli \
@@ -55,10 +55,10 @@ docker exec \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
 
-echo "Installing smart contract on peer0.org2.example.com"
+echo "Installing smart contract on peer0.consumer.example.com"
 docker exec \
-  -e CORE_PEER_LOCALMSPID=Org2MSP \
-  -e CORE_PEER_ADDRESS=peer0.org2.example.com:9051 \
+  -e CORE_PEER_LOCALMSPID=ConsumerMSP \
+  -e CORE_PEER_ADDRESS=peer0.consumer.example.com:9051 \
   -e CORE_PEER_MSPCONFIGPATH=${ORG2_MSPCONFIGPATH} \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE} \
   cli \
@@ -68,10 +68,10 @@ docker exec \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
 
-echo "Installing smart contract on peer1.org2.example.com"
+echo "Installing smart contract on peer1.consumer.example.com"
 docker exec \
-  -e CORE_PEER_LOCALMSPID=Org2MSP \
-  -e CORE_PEER_ADDRESS=peer1.org2.example.com:10051 \
+  -e CORE_PEER_LOCALMSPID=ConsumerMSP \
+  -e CORE_PEER_ADDRESS=peer1.consumer.example.com:10051 \
   -e CORE_PEER_MSPCONFIGPATH=${ORG2_MSPCONFIGPATH} \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE} \
   cli \
@@ -83,7 +83,7 @@ docker exec \
 
 echo "Instantiating smart contract on mychannel"
 docker exec \
-  -e CORE_PEER_LOCALMSPID=Org1MSP \
+  -e CORE_PEER_LOCALMSPID=ProviderMSP \
   -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH} \
   cli \
   peer chaincode instantiate \
@@ -93,10 +93,10 @@ docker exec \
     -l "$CC_RUNTIME_LANGUAGE" \
     -v 1.0 \
     -c '{"Args":[]}' \
-    -P "AND('Org1MSP.member','Org2MSP.member')" \
+    -P "AND('ProviderMSP.member','ConsumerMSP.member')" \
     --tls \
     --cafile ${ORDERER_TLS_ROOTCERT_FILE} \
-    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.provider.example.com:7051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
 
 echo "Waiting for instantiation request to be committed ..."
@@ -105,7 +105,7 @@ sleep 10
 echo "Submitting initLedger transaction to smart contract on mychannel"
 echo "The transaction is sent to all of the peers so that chaincode is built before receiving the following requests"
 docker exec \
-  -e CORE_PEER_LOCALMSPID=Org1MSP \
+  -e CORE_PEER_LOCALMSPID=ProviderMSP \
   -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH} \
   cli \
   peer chaincode invoke \
@@ -116,10 +116,10 @@ docker exec \
     --waitForEvent \
     --tls \
     --cafile ${ORDERER_TLS_ROOTCERT_FILE} \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer1.org1.example.com:8051 \
-    --peerAddresses peer0.org2.example.com:9051 \
-    --peerAddresses peer1.org2.example.com:10051 \
+    --peerAddresses peer0.provider.example.com:7051 \
+    --peerAddresses peer1.provider.example.com:8051 \
+    --peerAddresses peer0.consumer.example.com:9051 \
+    --peerAddresses peer1.consumer.example.com:10051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE} \
