@@ -1,0 +1,53 @@
+<% include partials/header %>
+
+<!-- Show render user information such as name and role -->
+<div class="jumbotron" style="text-align:center;">
+  <h1>Leave Application</h1> 
+</div>
+
+<div class="container">
+	<form action="/leave/application" method="POST">
+		<div class="form-group row">
+			<div class="col-md-1">
+				<label for="startDate">From</label>
+			</div>
+			<div class="input-group date col-md-5" id="startDate" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#startDate" placeholder="MM/DD/YYYY" name="startDate"/>
+                <div class="input-group-append" data-target="#startDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+            <div class="col-md-1">
+            	<label for="endDate">To</label>
+        	</div>
+            <div class="input-group date col-md-5" id="endDate" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#endDate" placeholder="MM/DD/YYYY" name="endDate"/>
+                <div class="input-group-append" data-target="#endDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
+
+<!--
+Work on disabling the days before
+Work on changing the date format -> DD/MM/YYYY 
+-->
+<script type = "text/javascript">
+	$( function () {
+        $('#startDate').datetimepicker({
+            format: 'L'
+        });
+    });
+    $( function () {
+        $('#endDate').datetimepicker({
+            format: 'L'
+        });
+    });
+
+</script>
+
+
+<% include partials/footer %>

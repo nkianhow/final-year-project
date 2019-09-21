@@ -132,28 +132,16 @@ class LeaveBalance extends Contract {
 
 class LeaveApplication extends Contract {
 
-    async initLedger( ctx ) {
-
-        // insert sample leave application into ledger
-        const leaveApplication = {
-            empName: 'Jason',
-            startDate: new Date(),
-            endDate: new Date(),
-            docType: 'Leave Application',
-            status: 'Pending'
-        }
-
-        // define key type and index
-        const index = 1;
-        const type = 'LEAVEAPPLICATION';
-
-        await ctx.stub.putState( type + index, Buffer.from(JSON.stringify(leaveApplication)) );
-
+    constructor() {
+        super();
+        this.key = 0;
     }
+
+    async initLedger( ctx ) { }
 
     /*
      * Creating a leave application submitted by an employee
-     * status should be defaulted to 'PENDING', awaiting approval from HR then direct superior
+     * All new application has default status of 'PENDING'
      *
      * @param {String} key of the record
      * @param {String} name of employee
@@ -161,31 +149,47 @@ class LeaveApplication extends Contract {
      * @param {Date} end date of leave
      * @param {String} status of the application
      */
-    async createLeaveApplication( ctx, key, empName, startDate, endDate, status ) {
+    async createLeaveApplication( ctx, empName, startDate, endDate ) {
 
         const leaveApplication = {
             empName,
             startDate,
             endDate,
             docType: 'Leave Application',
-            status
+            status: 'PENDING'
         }
 
-        await ctx.stub.putState( key, Buffer.from(JSON.stringify(leaveApplication)) );
+        await ctx.stub.putState( 'LEAVEAPPLICATION' + this.key , Buffer.from(JSON.stringify(leaveApplication)) );
+        this.key++;
     }
 
-    async updateLeaveApplicationStatus( ctx, empName, newStatus ) {
-        
+    /**
+     * Updating the status of leave application
+     *
+     * @param {String} key of the record
+     * @param {String} new status: 'REJECTED', 'REVIEWED', 'APPROVED'
+     */
+    async updateLeaveApplicationStatus( ctx, leaveApplicationKey , newStatus ) {
+
+        const leaveApplicationAsBytes = await ctx.stub.getState( leaveApplicationKey ); // get the car from chaincode state
+        if (!leaveApplicationAsBytes || leaveApplicationAsBytes.length === 0) {
+            throw new Error(`${ leaveApplicationKey } does not exist`);
+        }
+        const leaveApplication = JSON.parse(leaveApplicationAsBytes.toString());
+        leaveApplication.status = newStatus;
+
+        await ctx.stub.putState( leaveApplicationKey, Buffer.from( JSON.stringify(leaveApplication) ) );
     }
 
-    async queryAllLeaveApplications(ctx) {
-        const startKey = 'LEAVEAPPLICATION1';
+    async queryAllLeaveApplications( ctx ) {
+        const startKey = 'LEAVEAPPLICATION0';
         const endKey = 'LEAVEAPPLICATION999';
 
         const iterator = await ctx.stub.getStateByRange(startKey, endKey);
 
         const allResults = [];
         while (true) {
+            console.log(allResults);
             const res = await iterator.next();
 
             if (res.value && res.value.value.toString()) {

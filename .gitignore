@@ -1,6 +1,7 @@
 web-application/node_modules/
 web-application/package-lock.json
 web-application/hfc-key-store/
+web-application/wallet
 chaincode/node_modules/
 chaincode/package-lock.json
 hyperledger-fabric-network/channel-artifacts/

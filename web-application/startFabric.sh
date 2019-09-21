@@ -16,6 +16,9 @@ CC_SRC_PATH=/opt/gopath/src/github.com/chaincode
 # clean the keystore
 rm -rf ./hfc-key-store
 
+# clean the wallet
+rm -rf ./wallet
+
 # launch network; create channel and join peer to channel
 cd ../hyperledger-fabric-network
 echo y | ./byfn.sh down
@@ -37,7 +40,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n leave \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -50,7 +53,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n leave \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -63,7 +66,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n leave \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -76,7 +79,7 @@ docker exec \
   -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE} \
   cli \
   peer chaincode install \
-    -n fabcar \
+    -n leave \
     -v 1.0 \
     -p "$CC_SRC_PATH" \
     -l "$CC_RUNTIME_LANGUAGE"
@@ -89,7 +92,7 @@ docker exec \
   peer chaincode instantiate \
     -o orderer.example.com:7050 \
     -C mychannel \
-    -n fabcar \
+    -n leave \
     -l "$CC_RUNTIME_LANGUAGE" \
     -v 1.0 \
     -c '{"Args":[]}' \
@@ -111,7 +114,7 @@ docker exec \
   peer chaincode invoke \
     -o orderer.example.com:7050 \
     -C mychannel \
-    -n fabcar \
+    -n leave \
     -c '{"function":"initLedger","Args":[]}' \
     --waitForEvent \
     --tls \

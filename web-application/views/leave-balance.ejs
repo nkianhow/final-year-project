@@ -1,0 +1,35 @@
+<% include partials/header %>
+
+<div class="jumbotron" style="text-align:center;">
+  <h1>View Leave Balance</h1> 
+</div>
+
+<div class = "container">
+	<table class="table table-dark" style="text-align:center;">
+		<!-- Define name of each column -->
+		<thead>
+			<tr>
+			<th scope="col">Key #</th>
+			<th scope="col">Document Type</th>
+			<th scope="col">Name</th>
+			<th scope="col">Annual Leave</th>
+			<th scope="col">Medical Leave</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<% leaveBalances.forEach( (balance) => { %>
+				<tr>
+					<th scope="row"> <%= balance['Key'] %></th>
+					<td> <%= balance['Record']['docType'] %></td>
+					<td> <%= balance['Record']['name'] %></td>
+					<td> <%= balance['Record']['annualLeave'] %></td>
+					<td> <%= balance['Record']['medicalLeave'] %></td>
+				</tr>
+			<% }); %>
+		</tbody>
+	</table>
+</div>
+
+
+<% include partials/footer %>
