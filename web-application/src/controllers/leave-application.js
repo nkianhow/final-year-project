@@ -5,15 +5,49 @@ const fabric = new FabricService();
 
 function LeaveApplicationController() {}
 
-LeaveApplicationController.prototype.query = function() {
+/**
+ * Query leave applications belonging to specified user
+ * 
+ * @param {String} username 
+ */
+LeaveApplicationController.prototype.queryByUsername = async ( req , res ) => {
 
+	const username = req.body.username; 
+
+	const result = await fabric.queryByUsername( username );
+
+	console.log(result);
 }
 
-LeaveApplicationController.prototype.queryAll = async ( req , res ) => {
+/**
+ * Query leave applications from a specified department
+ *
+ */
+LeaveApplicationController.prototype.queryByDepartment = async ( req , res ) => {
+
+	const department = req.body.department;
+	const position = req.body.position;
+
+	if( position != 'HOD' ) {
+		// throw some error messages
+	} else {
+		const result = await fabric.queryByDepartment( department );
+		console.log(result);
+	}
+}
+
+/**
+ * Query all leave applications in the ledger
+ *
+ * @return {Object[]} array of leave application 
+ */
+LeaveApplicationController.prototype.queryAllPendingApplications = async ( req , res ) => {
 	
+	// It might be logical to return the applications that requires review
 	const contractName = 'LeaveApplication';
 	const contractMethod = 'queryAllLeaveApplications';
 	const result = await fabric.query( contractName , contractMethod );
+	console.log(result);
 
 	res.render('view-leave-application', { leaveApplications : result });
 }
@@ -27,13 +61,16 @@ LeaveApplicationController.prototype.queryAll = async ( req , res ) => {
  */
 LeaveApplicationController.prototype.createLeaveApplication = async function( req , res ) {
 
-	const startDate = req.body.startDate;
-	const endDate = req.body.endDate;
+	const ctx = req.body;
+	const userCtx = req.user;
 
-	const username = "Jason";
+	const startDate = ctx.startDate;
+	const endDate = ctx.endDate;
+	const username = userCtx.username;
+	const department = userCtx.department;
+	const name = userCtx.name;
 
-	await fabric.createLeaveApplication( username, startDate, endDate );
-
+	await fabric.createLeaveApplication( username , name , department , startDate , endDate );
 	res.redirect('/leave/application');
 }
 

@@ -149,10 +149,12 @@ class LeaveApplication extends Contract {
      * @param {Date} end date of leave
      * @param {String} status of the application
      */
-    async createLeaveApplication( ctx, empName, startDate, endDate ) {
+    async createLeaveApplication( ctx , username , name , department , startDate , endDate  ) {
 
         const leaveApplication = {
-            empName,
+            username,
+            name,
+            department,
             startDate,
             endDate,
             docType: 'Leave Application',
@@ -171,7 +173,7 @@ class LeaveApplication extends Contract {
      */
     async updateLeaveApplicationStatus( ctx, leaveApplicationKey , newStatus ) {
 
-        const leaveApplicationAsBytes = await ctx.stub.getState( leaveApplicationKey ); // get the car from chaincode state
+        const leaveApplicationAsBytes = await ctx.stub.getState( leaveApplicationKey ); 
         if (!leaveApplicationAsBytes || leaveApplicationAsBytes.length === 0) {
             throw new Error(`${ leaveApplicationKey } does not exist`);
         }
@@ -182,6 +184,7 @@ class LeaveApplication extends Contract {
     }
 
     async queryAllLeaveApplications( ctx ) {
+
         const startKey = 'LEAVEAPPLICATION0';
         const endKey = 'LEAVEAPPLICATION999';
 
@@ -212,7 +215,94 @@ class LeaveApplication extends Contract {
                 return JSON.stringify(allResults);
             }
         }
+
     }
+
+    /**
+     * Query by employee
+     *
+     * @param {Context} ctx the transaction context
+     * @param {String} username the username of current user
+     */
+    async queryByUsername( ctx , username ) {
+
+        let queryString = {
+            "selector": {
+                "empName": username
+            },
+            "use_index": ["_design/index1Doc", "index1"]
+        }
+
+        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        return queryResults;
+
+    }
+
+    /**
+     * Query by department
+     *
+     * @param {Context} ctx the transaction context
+     * @param {String} department the department that it belongs
+    */
+    async queryByDepartment( ctx , department ) {
+
+        let queryString = {
+            "selector": {
+                "department": department
+            },
+            "use_index": ["_design/index1Doc", "index1"]
+        }
+
+        let queryResults = await this.queryWithQueryString( ctx, JSON.stringify(queryString) );
+        return queryResults;
+
+    }
+
+    /**
+     * Evaluate a queryString
+     *
+     * @param {Context} ctx the transaction context
+     * @param {String} queryString the query string to be evaluated
+    */    
+    async queryWithQueryString(ctx, queryString) {
+
+        console.log("query String");
+        console.log(JSON.stringify(queryString));
+
+        let resultsIterator = await ctx.stub.getQueryResult(queryString);
+        
+        let allResults = [];
+
+        while (true) {
+            let res = await resultsIterator.next();
+
+            if (res.value && res.value.value.toString()) {
+                let jsonRes = {};
+
+                console.log(res.value.value.toString('utf8'));
+
+                jsonRes.Key = res.value.key;
+
+                try {
+                    jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+                } catch (err) {
+                    console.log(err);
+                    jsonRes.Record = res.value.value.toString('utf8');
+                }
+
+                allResults.push(jsonRes);
+            }
+            if (res.done) {
+                console.log('end of data');
+                await resultsIterator.close();
+                console.info(allResults);
+                console.log(JSON.stringify(allResults));
+                return JSON.stringify(allResults);
+            }
+        }
+
+    }
+
 }
 
 module.exports.LeaveBalance = LeaveBalance;

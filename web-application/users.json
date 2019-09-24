@@ -1,0 +1,47 @@
+{
+	"users" : [
+		{
+			"username" : "kianhow",
+			"password" : "password",
+			"name" : "Neo Kian How",
+			"department" : "Human Resources",
+			"position" : "HOD"
+		},{
+			"username" : "shawn",
+			"password" : "password",
+			"name" : "Shawn Tan",
+			"department" : "Manufacturing",
+			"position" : "HOD"
+		},{
+			"username" : "james",
+			"password" : "password",
+			"name" : "James Yeo",
+			"department" : "Manufacturing",
+			"position" : "Executive"
+		},{
+			"username" : "alex",
+			"password" : "password",
+			"name" : "Alex Wong",
+			"department" : "Manufacturing",
+			"position" : "Executive"
+		},{
+			"username" : "jerald",
+			"password" : "password",
+			"name" : "Jerald Ong",
+			"department" : "Technology",
+			"position" : "HOD"
+		},{
+			"username" : "james",
+			"password" : "password",
+			"name" : "James Yeo",
+			"department" : "Technology",
+			"position" : "Executive"
+		},{
+			"username" : "alex",
+			"password" : "password",
+			"name" : "Alex Wong",
+			"department" : "Technology",
+			"position" : "Executive"
+		}
+	]
+}

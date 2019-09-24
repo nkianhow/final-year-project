@@ -6,13 +6,14 @@ const
 	express	= require('express'),
 	app		= express(),
 	bodyParser	= require('body-parser'),
-	passport	= require('passport-local'),
-	LocalStrategy	= require('passport-local'),
+	passport	= require('passport'),
+	LocalStrategy = require('passport-local'),
 	expressSession	= require('express-session');
 
 // Load services and controllers
 const
 	Fabric = require('./fabric/service'),
+	AuthenticationController = require('./src/controllers/authentication'),
 	LeaveBalanceController = require('./src/controllers/leave-balance'),
 	LeaveApplicationController = require('./src/controllers/leave-application');
 
@@ -26,6 +27,7 @@ const sessionConfig = {
 // Instantiation of services and controllers
 const 
 	fabric = new Fabric(),
+	authenticationController = new AuthenticationController(),
 	leaveBalanceController = new LeaveBalanceController(),
 	leaveApplicationController = new LeaveApplicationController();
 
@@ -33,24 +35,26 @@ const
 app.set( 'view engine' , 'ejs' );
 app.use( bodyParser.urlencoded( { extended : true } ) );
 app.use( bodyParser.json() );
-
+app.use(expressSession( sessionConfig ));
+app.use( passport.initialize() );
+app.use( passport.session() );
+passport.use( authenticationController.strategy() );
+passport.serializeUser( authenticationController.serialize );
+passport.deserializeUser( authenticationController.deserialize );
 
 // define routes used in application
-app.get( '/' , ( req , res ) => {
-	res.render('login');
-})
+app.get( '/' , ( req , res ) => { res.render('login'); });
 
+// failure should redirect to 404
+app.post('/', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/'}) );
+
+// assumingly working well routes
 app.get('/leave/balance', leaveBalanceController.queryAll );
-
-app.get('/leave/application', async ( req , res ) =>{
-	res.render('leave-application');
-} );
+app.get('/leave/application', async ( req , res ) =>{ res.render('leave-application'); } );
 app.post('/leave/application', leaveApplicationController.createLeaveApplication );
-
-app.get('/leave/application/view', leaveApplicationController.queryAll );
+app.get('/leave/application/view', leaveApplicationController.queryAllPendingApplications );
 app.post('/leave/application/update', leaveApplicationController.updateLeaveApplicationStatus );
 
-app.get('/test', leaveApplicationController.queryAll);
 app.listen( port , async () =>{
 	// await fabric.enrollAdmin();
 	// await fabric.registerUser();
