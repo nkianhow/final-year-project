@@ -15,7 +15,8 @@ const
 	Fabric = require('./fabric/service'),
 	AuthenticationController = require('./src/controllers/authentication'),
 	LeaveBalanceController = require('./src/controllers/leave-balance'),
-	LeaveApplicationController = require('./src/controllers/leave-application');
+	LeaveApplicationController = require('./src/controllers/leave-application'),
+	LeaveController = require('./src/controllers/leave');
 
 // define session configuration 
 const sessionConfig = {
@@ -29,7 +30,7 @@ const
 	fabric = new Fabric(),
 	authenticationController = new AuthenticationController(),
 	leaveBalanceController = new LeaveBalanceController(),
-	leaveApplicationController = new LeaveApplicationController();
+	leaveController = new LeaveController();
 
 // define configuration used in application
 app.set( 'view engine' , 'ejs' );
@@ -52,9 +53,9 @@ app.get('/logout', ( req, res ) => { req.logout(); res.redirect('/'); });
 // assumingly working well routes
 app.get('/leave/balance', leaveBalanceController.queryAll );
 app.get('/leave/application', async ( req , res ) =>{ res.render('leave-application'); } );
-app.post('/leave/application', leaveApplicationController.createLeaveApplication );
-app.get('/leave/application/view', leaveApplicationController.queryAllPendingApplications );
-app.post('/leave/application/update', leaveApplicationController.updateLeaveApplicationStatus );
+app.post('/leave/application', leaveController.createLeaveApplication );
+app.get('/leave/application/view', leaveController.queryAllPendingApplications );
+app.post('/leave/application/update',leaveController.updateLeaveApplicationStatus );
 
 app.listen( port , async () =>{
 	// await fabric.enrollAdmin();
