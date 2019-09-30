@@ -5,6 +5,7 @@ const fabric = new FabricService();
 
 function LeaveApplicationController() {}
 
+LeaveApplicationController.prototype.key = 0;
 /**
  * Query leave applications belonging to specified user
  * 
@@ -64,13 +65,18 @@ LeaveApplicationController.prototype.createLeaveApplication = async function( re
 	const ctx = req.body;
 	const userCtx = req.user;
 
+	console.log(req.user);
+	
 	const startDate = ctx.startDate;
 	const endDate = ctx.endDate;
 	const username = userCtx.username;
 	const department = userCtx.department;
 	const name = userCtx.name;
+	const key = LeaveApplicationController.prototype.key.toString();
 
-	await fabric.createLeaveApplication( username , name , department , startDate , endDate );
+	await fabric.createLeaveApplication( username , key , name , department , startDate , endDate );
+	LeaveApplicationController.prototype.key++;
+
 	res.redirect('/leave/application');
 }
 

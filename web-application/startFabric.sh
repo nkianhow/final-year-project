@@ -96,7 +96,7 @@ docker exec \
     -l "$CC_RUNTIME_LANGUAGE" \
     -v 1.0 \
     -c '{"Args":[]}' \
-    -P "AND('ProviderMSP.member','ConsumerMSP.member')" \
+    -P "OR('ProviderMSP.member','ConsumerMSP.member')" \
     --tls \
     --cafile ${ORDERER_TLS_ROOTCERT_FILE} \
     --peerAddresses peer0.provider.example.com:7051 \

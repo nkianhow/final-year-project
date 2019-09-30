@@ -46,7 +46,8 @@ passport.deserializeUser( authenticationController.deserialize );
 app.get( '/' , ( req , res ) => { res.render('login'); });
 
 // failure should redirect to 404
-app.post('/', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/'}) );
+app.post('/', passport.authenticate('local', { successRedirect: '/leave/application', failureRedirect: '/'}) );
+app.get('/logout', ( req, res ) => { req.logout(); res.redirect('/'); });
 
 // assumingly working well routes
 app.get('/leave/balance', leaveBalanceController.queryAll );

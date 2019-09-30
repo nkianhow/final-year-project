@@ -132,11 +132,6 @@ class LeaveBalance extends Contract {
 
 class LeaveApplication extends Contract {
 
-    constructor() {
-        super();
-        this.key = 0;
-    }
-
     async initLedger( ctx ) { }
 
     /*
@@ -149,7 +144,7 @@ class LeaveApplication extends Contract {
      * @param {Date} end date of leave
      * @param {String} status of the application
      */
-    async createLeaveApplication( ctx , username , name , department , startDate , endDate  ) {
+    async createLeaveApplication( ctx , key , username , name , department , startDate , endDate  ) {
 
         const leaveApplication = {
             username,
@@ -161,8 +156,7 @@ class LeaveApplication extends Contract {
             status: 'PENDING'
         }
 
-        await ctx.stub.putState( 'LEAVEAPPLICATION' + this.key , Buffer.from(JSON.stringify(leaveApplication)) );
-        this.key++;
+        await ctx.stub.putState( 'LEAVEAPPLICATION' + key , Buffer.from(JSON.stringify(leaveApplication)) );
     }
 
     /**

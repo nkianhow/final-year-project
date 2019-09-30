@@ -25,21 +25,21 @@
 			"department" : "Manufacturing",
 			"position" : "Executive"
 		},{
-			"username" : "jerald",
+			"username" : "brandon",
 			"password" : "password",
-			"name" : "Jerald Ong",
+			"name" : "Brandon Wong",
 			"department" : "Technology",
 			"position" : "HOD"
 		},{
-			"username" : "james",
+			"username" : "howard",
 			"password" : "password",
-			"name" : "James Yeo",
+			"name" : "Howard Wolowitz",
 			"department" : "Technology",
 			"position" : "Executive"
 		},{
-			"username" : "alex",
+			"username" : "leonard",
 			"password" : "password",
-			"name" : "Alex Wong",
+			"name" : "Leonard Bo",
 			"department" : "Technology",
 			"position" : "Executive"
 		}

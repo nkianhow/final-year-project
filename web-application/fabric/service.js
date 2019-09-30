@@ -228,7 +228,7 @@ FabricService.prototype.updateLeaveApplicationStatus = async ( key , newStatus )
 /**
  * Create new leave application 
  */
-FabricService.prototype.createLeaveApplication = async ( username , name , department , startDate, endDate ) => {
+FabricService.prototype.createLeaveApplication = async ( username , key , name , department , startDate, endDate ) => {
 
     try { 
 
@@ -257,7 +257,7 @@ FabricService.prototype.createLeaveApplication = async ( username , name , depar
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('leave', 'LeaveApplication');
 
-        await contract.submitTransaction('createLeaveApplication', username , name , department , startDate, endDate);
+        await contract.submitTransaction('createLeaveApplication', key , username , name , department , startDate, endDate);
 
     } catch( error ) {
 
