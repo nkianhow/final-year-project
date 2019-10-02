@@ -1,0 +1,8 @@
+{
+	"index" : {
+		"fields" : ["status", "docType"]
+	}, 
+	"ddoc" : "indexPendingApplicationsDoc",
+	"name" : "indexPendingApplications",
+	"type" : "json"
+}

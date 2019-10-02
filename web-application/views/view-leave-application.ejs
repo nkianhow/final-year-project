@@ -4,44 +4,50 @@
   <h1>View Leave Applications</h1> 
 </div>
 
-<div class = "container">
-	<table class="table table-dark" style="text-align:center;">
+	<div class = "container">
+		<table class="table table-dark" style="text-align:center;">
 
-		<!-- Define name of each column -->
-		<thead>
-			<tr>
-			<th scope="col">Key #</th>
-			<th scope="col">Document Type</th>
-			<th scope="col">Name</th>
-			<th scope="col">Start Date</th>
-			<th scope="col">End Date</th>
-			<th scope="col">Status</th>
-			<th scope="col">Action</th>
-			</tr>
-		</thead>
-
-		<tbody>
-			<% for ( let i = 0; i < leaveApplications.length; i++ ) { %>
+			<!-- Define name of each column -->
+			<thead>
 				<tr>
-					<th scope="row"> <%= leaveApplications[i]['Key'] %></th>
-					<td> <%= leaveApplications[i]['Record']['docType'] %></td>
-					<td> <%= leaveApplications[i]['Record']['name'] %></td>
-					<td> <%= leaveApplications[i]['Record']['startDate'] %></td>
-					<td> <%= leaveApplications[i]['Record']['endDate'] %></td>
-					<td> <%= leaveApplications[i]['Record']['status'] %></td>
-					<td>
-						<form action="/leave/application/update" method="POST" id="form">
-							<input type="hidden" name="key" value= <%= leaveApplications[i]['Key']%> >
-							<input type="hidden" name="status" value= <%= leaveApplications[i]['Record']['status']%> >
-							<input type="submit" name="approval" value="approve">
-							<input type="submit" name="approval" value="reject">
-						</form>
-					</td>
-				</tr> 
-			<% }; %>
-		</tbody>
+				<th scope="col">Key #</th>
+				<th scope="col">Document Type</th>
+				<th scope="col">Name</th>
+				<th scope="col">Start Date</th>
+				<th scope="col">End Date</th>
+				<th scope="col">Status</th>
+				<% if ( user.position === "VP" || user.department === "Human Resources" ) { %>
+					<th scope="col">Action</th>
+				<% }; %>
+				</tr>
+			</thead>
 
-	</table>
+			<tbody>
+				
+					<% for ( let i = 0; i < leaveApplications.length; i++ ) { %>
+						<tr>
+							<th scope="row"> <%= leaveApplications[i]['Key'] %></th>
+							<td> <%= leaveApplications[i]['Record']['docType'] %></td>
+							<td> <%= leaveApplications[i]['Record']['name'] %></td>
+							<td> <%= leaveApplications[i]['Record']['startDate'] %></td>
+							<td> <%= leaveApplications[i]['Record']['endDate'] %></td>
+							<td> <%= leaveApplications[i]['Record']['status'] %></td>
+							<td>
+								<% if ( user.position === "VP" || user.department === "Human Resources" ) { %>
+								<form action="/leave/update" method="POST" id="form">
+									<input type="hidden" name="key" value= <%= leaveApplications[i]['Key']%> >
+									<input type="hidden" name="status" value= <%= leaveApplications[i]['Record']['status']%> >
+									<input type="submit" name="approval" value="approve">
+									<input type="submit" name="approval" value="reject">
+								</form>
+								<% } %>
+							</td>
+						</tr> 
+					<% }; %>
+				
+			</tbody>
+		</table>
+
 </div>
 
 <% include partials/footer %>

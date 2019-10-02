@@ -119,15 +119,7 @@ FabricService.prototype.registerUser = async function() {
     }
 }
 
-/**
- * Making of query to ledger in the blockchain network
- *
- * @param {String} name of contract 
- * @param {String} query one or query all
- @
- @ @return {JSON} result formatted in JSON
- */
-FabricService.prototype.query = async function( contractName , queryType ) {
+FabricService.prototype.queryAllPendingApplications = async function() {
 
     try {
 
@@ -165,7 +157,7 @@ FabricService.prototype.query = async function( contractName , queryType ) {
          * @param {String} name of the chaincode instantiated in the channel
          * @param {String} name of the contract instantiated in the channel
          */
-        const contract = network.getContract('leave', contractName );
+        const contract = network.getContract('leave', 'LeaveApplication');
 
         /*
          * Evaluate the specified transaction
@@ -173,7 +165,7 @@ FabricService.prototype.query = async function( contractName , queryType ) {
          *
          * @return {Buffer} results returned in buffer format
          */
-        const result = await contract.evaluateTransaction( queryType );
+        const result = await contract.evaluateTransaction('queryPendingApplications');
 
         const resultJSON = JSON.parse( result );
 
@@ -266,7 +258,7 @@ FabricService.prototype.createLeaveApplication = async ( username , key , name ,
     }
 }
 
-FabricService.prototype.queryByPartialKey = async () => {
+FabricService.prototype.queryByIndex = async ( queryType , key ) => {
 
     try {
 
@@ -312,7 +304,7 @@ FabricService.prototype.queryByPartialKey = async () => {
          *
          * @return {Buffer} results returned in buffer format
          */
-        const result = await contract.evaluateTransaction( 'queryByUsername' );
+        const result = await contract.evaluateTransaction( queryType , key );
 
         const resultJSON = JSON.parse( result );
 

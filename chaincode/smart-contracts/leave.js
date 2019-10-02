@@ -222,12 +222,13 @@ class LeaveApplication extends Contract {
 
         let queryString = {
             "selector": {
-                "empName": username
+                "username": username,
+                "docType" : "Leave Application"
             },
-            "use_index": ["_design/index1Doc", "index1"]
+            "use_index": ["_design/indexUsernameDoc", "indexUsername"]
         }
 
-        let queryResults = await this.queryWithQueryString(ctx, JSON.stringify(queryString));
+        let queryResults = await this.queryWithQueryString( ctx, JSON.stringify(queryString) );
         return queryResults;
 
     }
@@ -237,14 +238,33 @@ class LeaveApplication extends Contract {
      *
      * @param {Context} ctx the transaction context
      * @param {String} department the department that it belongs
-    */
-    async queryByDepartment( ctx , department ) {
+     */
+    async queryReviewedApplications( ctx , department ) {
 
         let queryString = {
             "selector": {
-                "department": department
+                "department": department,
+                "status" : "REVIEWED",
+                "docType" : "Leave Application"
             },
-            "use_index": ["_design/index1Doc", "index1"]
+            "use_index": ["_design/indexReviewedApplicationsDoc", "indexReviewedApplications"]
+        }
+
+        let queryResults = await this.queryWithQueryString( ctx, JSON.stringify(queryString) );
+        return queryResults;
+    }
+
+    /**
+     *  Query pending leave applications
+     */
+    async queryPendingApplications( ctx ) {
+
+        let queryString = {
+            "selector": {
+                "status": "PENDING",
+                "docType" : "Leave Application"
+            },
+            "use_index": ["_design/indexPendingApplicationsDoc", "indexPendingApplications"]
         }
 
         let queryResults = await this.queryWithQueryString( ctx, JSON.stringify(queryString) );
@@ -257,7 +277,7 @@ class LeaveApplication extends Contract {
      *
      * @param {Context} ctx the transaction context
      * @param {String} queryString the query string to be evaluated
-    */    
+     */    
     async queryWithQueryString(ctx, queryString) {
 
         console.log("query String");

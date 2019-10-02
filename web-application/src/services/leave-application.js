@@ -9,47 +9,45 @@ LeaveApplicationService.prototype.key = 0;
 /**
  * Query leave applications belonging to specified user
  * 
- * @param {String} username 
+ * @params {String} username 
+ *
+ * @return {Object[]} array of leave applications
  */
-LeaveApplicationService.prototype.queryByUsername = async ( req , res ) => {
+LeaveApplicationService.prototype.queryByUsername = async ( username ) => {
 
-	const username = req.body.username; 
+	const queryType = "queryByUsername";
+	const key = username;
 
-	const result = await fabric.queryByUsername( username );
+	const result = await fabric.queryByIndex( queryType , key );
 
-	console.log(result);
+	return result;
 }
 
 /**
  * Query leave applications from a specified department
  *
  */
-LeaveApplicationService.prototype.queryByDepartment = async ( req , res ) => {
+LeaveApplicationService.prototype.queryReviewedApplicationsByDepartment = async ( department ) => {
 
-	const department = req.body.department;
-	const position = req.body.position;
+	const queryType = "queryReviewedApplications";
+	const key = department;
 
-	if( position != 'HOD' ) {
-		// throw some error messages
-	} else {
-		const result = await fabric.queryByDepartment( department );
-		console.log(result);
-	}
+	const result = await fabric.queryByIndex( queryType , key );
+
+	return result;
 }
 
 /**
  * Query all leave applications in the ledger
  *
- * @return {Object[]} array of leave application 
+ * @return {Object[]} array of leave applications
  */
-LeaveApplicationService.prototype.queryAllPendingApplications = async () => {
-	
-	const contractName = 'LeaveApplication';
-	const contractMethod = 'queryAllLeaveApplications';
+LeaveApplicationService.prototype.queryAllPendingApplications = async () => {	
 
-	const result = await fabric.query( contractName , contractMethod );
+	const result = await fabric.queryAllPendingApplications();
 
 	return result;
+
 }
 
 /**
@@ -82,11 +80,13 @@ LeaveApplicationService.prototype.reviewLeaveApplication = async ( key ) => {
 LeaveApplicationService.prototype.approveLeaveApplication = async ( key ) => {
 
 	await fabric.updateLeaveApplicationStatus( key , 'APPROVED' );
+
 }
 
 LeaveApplicationService.prototype.rejectLeaveApplication = async ( key ) => {
 
 	await fabric.updateLeaveApplicationStatus( key , 'REJECTED' ); 
+
 }
 
 

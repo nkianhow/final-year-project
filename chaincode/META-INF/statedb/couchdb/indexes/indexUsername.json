@@ -1,8 +1,8 @@
 {
 	"index" : {
-		"fields" : ["username"]
+		"fields" : ["username", "docType"]
 	}, 
-	"ddoc" : "index2Doc",
-	"name" : "index2",
+	"ddoc" : "indexUsernameDoc",
+	"name" : "indexUsername",
 	"type" : "json"
 }

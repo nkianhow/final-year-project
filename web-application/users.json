@@ -5,13 +5,13 @@
 			"password" : "password",
 			"name" : "Neo Kian How",
 			"department" : "Human Resources",
-			"position" : "HOD"
+			"position" : "VP"
 		},{
 			"username" : "shawn",
 			"password" : "password",
 			"name" : "Shawn Tan",
 			"department" : "Manufacturing",
-			"position" : "HOD"
+			"position" : "VP"
 		},{
 			"username" : "james",
 			"password" : "password",
@@ -29,7 +29,7 @@
 			"password" : "password",
 			"name" : "Brandon Wong",
 			"department" : "Technology",
-			"position" : "HOD"
+			"position" : "VP"
 		},{
 			"username" : "howard",
 			"password" : "password",
