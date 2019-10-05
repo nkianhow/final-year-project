@@ -8,6 +8,10 @@
         background: grey;
         color: white;
     }
+
+    .row {
+        margin-bottom: 25px;
+    }
 </style>
 
 <div class="jumbotron" style="text-align:center;">
@@ -15,16 +19,25 @@
 </div>
 
 <div class="container">
+
+
     <div class="row">
 
         <div class="col">
             <ul class="list-group">
-                <li class="list-group-item list-group-header">Leave</li>
+                <li class="list-group-item list-group-header">
+                    Leave
+                </li>
+
                 <li class="list-group-item">
-                    <a href="/leave/apply"> Apply Leave </a>
+                    <a href="/leave/apply"> 
+                        Apply Leave 
+                    </a>
                 </li>
                 <li class="list-group-item"> 
-                    <a href="leave/view"> View Leave Status </a> 
+                    <a href="leave/view"> 
+                        View Leave Status 
+                    </a> 
                 </li>
             </ul>
         </div>
@@ -43,7 +56,51 @@
                 <li class="list-group-item">Approve Claims</li>
             </ul>
         </div>
+
     </div>
+
+    <div class="row">
+
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item list-group-header">
+                    Performance Appraisal
+                </li>
+
+                <li class="list-group-item">
+                    <a href="/appraisal"> 
+                        Write Appraisal Report
+                    </a>
+                </li>
+                <li class="list-group-item"> 
+                    <a href="leave/view"> 
+                        View Appraisal Reports
+                    </a> 
+                </li>
+                <% if (user['department'] === 'Human Resources' ) { %>
+                    <li class="list-group-item"> 
+                        <a href="/appraisal/generate"> 
+                            Generate Forms
+                        </a> 
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item list-group-header"> ??? </li>
+            </ul>
+        </div>
+
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item list-group-header"> ??? </li>
+            </ul>
+        </div>
+
+    </div>
+
 </div>
 
 

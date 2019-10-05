@@ -115,7 +115,7 @@ docker exec \
     -o orderer.example.com:7050 \
     -C mychannel \
     -n leave \
-    -c '{"function":"initLedger","Args":[]}' \
+    -c '{"function":"initLedger", "Args":[]}' \
     --waitForEvent \
     --tls \
     --cafile ${ORDERER_TLS_ROOTCERT_FILE} \
@@ -127,6 +127,7 @@ docker exec \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+
 set +x
 
 cat <<EOF

@@ -1,0 +1,75 @@
+<% include partials/header %>
+
+<!-- Show render user information such as name and role -->
+<div class="jumbotron" style="text-align:center;">
+  <h1> Appraisal </h1> 
+</div>
+
+<div class = "container">
+    <form action="/appraisal" method="POST">
+       
+        <div class="form-group row">
+            <div class="col-sm">
+                <span>Key: <%= employee['key'] %></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm">
+                <span> Name: <%= employee['name'] %></span>
+            </div>
+            <div class="col-sm">
+                <span> Department: <%= employee['department'] %></span>
+            </div>
+            <div class="col-sm">
+                <span> Position: <%= employee['position'] %></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col">
+               <div class="input-group input-group-sm mb-3">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Comments</span>
+                        </div>
+                        <textarea class="form-control" name="comments"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="promoted" id="promoted">
+                  <label class="form-check-label" for="promoted">
+                    Promote Employee
+                  </label>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="key" value="<%= employee['key'] %>">
+        <input type="hidden" name="name" value="<%= employee['name'] %>">
+        <input type="hidden" name="position" value="<%= employee['position'] %>">
+        <input type="hidden" name="department" value="<%= employee['department'] %>">
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    let checkbox = document.getElementById('promoted');
+    checkbox.addEventListener('click', function() {
+        
+        if(checkbox.checked) {
+            checkbox.value = true;
+        } else {
+            checkbox.value = false;
+        }
+        console.log(checkbox.value);
+    });
+</script>
+
+<% include partials/footer %>

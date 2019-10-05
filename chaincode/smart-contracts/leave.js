@@ -29,6 +29,64 @@ class LeaveBalance extends Contract {
             await ctx.stub.putState('LEAVE' + i, Buffer.from(JSON.stringify(leaves[i])));
         }
 
+        const users = [
+            {
+                username : "kianhow",
+                password : "password",
+                name : "Neo Kian How",
+                address : "52 florence road, 549506, Singapore",
+                department : "Human Resources",
+                position : "VP"
+            },{
+                username : "shawn",
+                password : "password",
+                name : "Shawn Tan",
+                address : "1, Genting Link #03-03, Perfect Ind Bldg Singapore 349518, Singapore",
+                department : "Manufacturing",
+                position : "VP"
+            },{
+                username : "james",
+                password : "password",
+                name : "James Yeo",
+                address : "6 Battery Road #22-00 6 Battery Road, 049909, Singapore",
+                department : "Manufacturing",
+                position : "Executive"
+            },{
+                username : "alex",
+                password : "password",
+                name : "Alex Wong",
+                address : "396 Alexandra Road #03-06 BP TOWER, 119954, Singapore",
+                department : "Manufacturing",
+                position : "Executive"
+            },{
+                username : "brandon",
+                password : "password",
+                name : "Brandon Wong",
+                address : "45 Defu Lane 9 Singapore 539285, Singapore",
+                department : "Technology",
+                position : "VP"
+            },{
+                username : "howard",
+                password : "password",
+                name : "Howard Wolowitz",
+                address : "521 Woodlands Dr14 #02-343, 730521 Singapore, Singapore",
+                department : "Technology",
+                position : "Executive"
+            },{
+                username : "leonard",
+                password : "password",
+                name : "Leonard Bo",
+                address : "9 Temasek Boulevard #38-01 SUNTEC TOWER 2, 038989, Singapore",
+                department : "Technology",
+                position : "Executive"
+            }
+        ]
+
+        for (let i = 0; i < users.length; i++) {
+            users[i].docType = 'userInformation';
+            await ctx.stub.putState('USER' + i, Buffer.from(JSON.stringify(users[i])));
+        }
+
     }
 
     async queryLeave(ctx, leaveNumber) {
@@ -152,7 +210,7 @@ class LeaveApplication extends Contract {
             department,
             startDate,
             endDate,
-            docType: 'Leave Application',
+            docType: 'leaveApplication',
             status: 'PENDING'
         }
 
@@ -223,7 +281,7 @@ class LeaveApplication extends Contract {
         let queryString = {
             "selector": {
                 "username": username,
-                "docType" : "Leave Application"
+                "docType" : "leaveApplication"
             },
             "use_index": ["_design/indexUsernameDoc", "indexUsername"]
         }
@@ -245,7 +303,7 @@ class LeaveApplication extends Contract {
             "selector": {
                 "department": department,
                 "status" : "REVIEWED",
-                "docType" : "Leave Application"
+                "docType" : "leaveApplication"
             },
             "use_index": ["_design/indexReviewedApplicationsDoc", "indexReviewedApplications"]
         }
@@ -262,7 +320,7 @@ class LeaveApplication extends Contract {
         let queryString = {
             "selector": {
                 "status": "PENDING",
-                "docType" : "Leave Application"
+                "docType" : "leaveApplication"
             },
             "use_index": ["_design/indexPendingApplicationsDoc", "indexPendingApplications"]
         }

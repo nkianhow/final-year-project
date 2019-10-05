@@ -34,7 +34,7 @@
 							<td> <%= leaveApplications[i]['Record']['status'] %></td>
 							<td>
 								<% if ( user.position === "VP" || user.department === "Human Resources" ) { %>
-								<form action="/leave/update" method="POST" id="form">
+								<form action="/leave/update" method="POST">
 									<input type="hidden" name="key" value= <%= leaveApplications[i]['Key']%> >
 									<input type="hidden" name="status" value= <%= leaveApplications[i]['Record']['status']%> >
 									<input type="submit" name="approval" value="approve">
@@ -47,7 +47,6 @@
 				
 			</tbody>
 		</table>
-
-</div>
+	</div>
 
 <% include partials/footer %>

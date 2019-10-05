@@ -1,0 +1,50 @@
+<% include partials/header %>
+
+<!-- Show render user information such as name and role -->
+<div class="jumbotron" style="text-align:center;">
+  <h1>Performance Appraisal</h1> 
+</div>
+
+<div class = "container">
+    <table class="table table-dark" style="text-align:center;">
+
+        <!-- Define name of each column -->
+        <thead>
+            <tr>
+            <th scope="col">Key</th>
+            <th scope="col">Name</th>
+            <th scope="col">Department</th>
+            <th scope="col">Position</th>
+            <% if ( user.position === "VP") { %>
+                <th scope="col">Action</th>
+            <% }; %>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% for ( let i = 0; i < employees.length; i++ ) { %>
+                <tr>
+                    <th scope="row"> <%= employees[i]['Key'] %></th>
+                    <td> <%= employees[i]['Record']['name'] %></td>
+                    <td> <%= employees[i]['Record']['department'] %></td>
+                    <td> <%= employees[i]['Record']['position'] %></td>
+                    <td>
+                        <% if ( employees[i]['Record']['status'] === "PENDING" ) { %>
+                            <form action="/appraisal/form" method="POST">
+                                <input type="hidden" name="key" value= <%= employees[i]['Key'] %> >
+                                <input type="hidden" name="name" value= <%= employees[i]['Record']['name'] %> >
+                                <input type="hidden" name="department" value= <%= employees[i]['Record']['department'] %> >
+                                <input type="hidden" name="position" value= <%= employees[i]['Record']['position'] %> >
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        <% } else { %>
+                            <%= employees[i]['Record']['status']%>
+                        <% }%>
+                    </td>
+                </tr> 
+            <% }; %>
+        </tbody>
+    </table>
+</div>
+
+<% include partials/footer %>

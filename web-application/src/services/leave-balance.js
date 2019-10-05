@@ -9,7 +9,7 @@ function LeaveBalanceService() {}
  * Query the list of all existing record of leave balance
  *
  */
-LeaveBalanceService.prototype.queryAllLeaveBalances = async ( req , res ) => {
+LeaveBalanceService.prototype.queryAllLeaveBalances = async () => {
 	const contractName = 'LeaveBalance';
 	const contractMethod = 'queryAllLeaveBalances';
 

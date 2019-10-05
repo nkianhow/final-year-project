@@ -14,7 +14,8 @@ const
 const
 	Fabric = require('./fabric/service'),
 	AuthenticationController = require('./src/controllers/authentication'),
-	LeaveController = require('./src/controllers/leave');
+	LeaveController = require('./src/controllers/leave'),
+	AppraisalController = require('./src/controllers/appraisal');
 
 // define session configuration 
 const sessionConfig = {
@@ -27,7 +28,8 @@ const sessionConfig = {
 const 
 	fabric = new Fabric(),
 	authenticationController = new AuthenticationController(),
-	leaveController = new LeaveController();
+	leaveController = new LeaveController(),
+	appraisalController = new AppraisalController();
 
 // define configuration used in application
 app.set( 'view engine' , 'ejs' );
@@ -72,8 +74,13 @@ app.get('/leave/pending', leaveController.queryAllPendingApplications );
 app.get('/leave/reviewed', leaveController.queryReviewedApplicationsByDepartment );
 app.post('/leave/update',leaveController.updateLeaveApplicationStatus );
 
+app.get('/appraisal', appraisalController.queryAllEmployeesByDepartment );
+app.post('/appraisal', appraisalController.submitAppraisal ); 
+app.post('/appraisal/form', appraisalController.getEmployeeForm );
+app.get('/appraisal/generate', appraisalController.generateForms );
+
 app.listen( port , async () =>{
-	// await fabric.enrollAdmin();
-	// await fabric.registerUser();
+	await fabric.enrollAdmin();
+	await fabric.registerUser();
 	console.log( 'Server is up! Listening at port: ' + port ); 
 });

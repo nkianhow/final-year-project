@@ -15,10 +15,11 @@ LeaveApplicationService.prototype.key = 0;
  */
 LeaveApplicationService.prototype.queryByUsername = async ( username ) => {
 
+	const contractName = "LeaveApplication";
 	const queryType = "queryByUsername";
 	const key = username;
 
-	const result = await fabric.queryByIndex( queryType , key );
+	const result = await fabric.queryByIndex( contractName, queryType , key );
 
 	return result;
 }
@@ -29,10 +30,11 @@ LeaveApplicationService.prototype.queryByUsername = async ( username ) => {
  */
 LeaveApplicationService.prototype.queryReviewedApplicationsByDepartment = async ( department ) => {
 
+	const contractName = "LeaveApplication";
 	const queryType = "queryReviewedApplications";
 	const key = department;
 
-	const result = await fabric.queryByIndex( queryType , key );
+	const result = await fabric.queryByIndex( contractName , queryType , key );
 
 	return result;
 }
