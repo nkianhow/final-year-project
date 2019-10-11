@@ -11,7 +11,7 @@ function AppraisalController() {}
 AppraisalController.prototype.generateForms = async ( req , res ) => {
 
 	const employees = await userService.queryAllEmployees();
-	const result = await appraisalService.generateForms(employees);
+	const result = await appraisalService.generateForms( employees );
 
 	res.redirect('/');
 }
@@ -60,8 +60,8 @@ AppraisalController.prototype.queryAllEmployeesByDepartment = async ( req , res 
 AppraisalController.prototype.queryAllForms = async ( req , res ) => {
 	
 	const result = await appraisalService.queryAllForms();
-	console.log(result);
 
+	res.render('appraisal' , { employees : result } );
 }
 
 module.exports = AppraisalController;

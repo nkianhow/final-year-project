@@ -31,62 +31,124 @@ class LeaveBalance extends Contract {
 
         const users = [
             {
+                id : "ID001",
                 username : "kianhow",
                 password : "password",
                 name : "Neo Kian How",
                 address : "52 florence road, 549506, Singapore",
                 department : "Human Resources",
-                position : "VP"
+                position : "VP",
+                bankAccount: "111-11111-1",
+                salary : "7000"
             },{
+                id : "ID002",
                 username : "shawn",
                 password : "password",
                 name : "Shawn Tan",
                 address : "1, Genting Link #03-03, Perfect Ind Bldg Singapore 349518, Singapore",
-                department : "Manufacturing",
-                position : "VP"
+                department : "Finance",
+                position : "VP",
+                bankAccount: "222-11111-1",
+                salary : "5000"
             },{
+                id : "ID003",
                 username : "james",
                 password : "password",
                 name : "James Yeo",
                 address : "6 Battery Road #22-00 6 Battery Road, 049909, Singapore",
-                department : "Manufacturing",
-                position : "Executive"
+                department : "Finance",
+                position : "Executive",
+                bankAccount: "333-11111-1",
+                salary : "3500"
             },{
+                id : "ID004",
                 username : "alex",
                 password : "password",
                 name : "Alex Wong",
                 address : "396 Alexandra Road #03-06 BP TOWER, 119954, Singapore",
-                department : "Manufacturing",
-                position : "Executive"
+                department : "Finance",
+                position : "Executive",
+                bankAccount: "444-11111-1",
+                salary : "3700"
             },{
+                id : "ID005",
                 username : "brandon",
                 password : "password",
                 name : "Brandon Wong",
                 address : "45 Defu Lane 9 Singapore 539285, Singapore",
                 department : "Technology",
-                position : "VP"
+                position : "VP",
+                bankAccount: "555-11111-1",
+                salary : "6000"
             },{
+                id : "ID006",
                 username : "howard",
                 password : "password",
                 name : "Howard Wolowitz",
                 address : "521 Woodlands Dr14 #02-343, 730521 Singapore, Singapore",
                 department : "Technology",
-                position : "Executive"
+                position : "Executive",
+                bankAccount: "666-11111-1",
+                salary : "4000"
             },{
+                id : "ID007",
                 username : "leonard",
                 password : "password",
                 name : "Leonard Bo",
                 address : "9 Temasek Boulevard #38-01 SUNTEC TOWER 2, 038989, Singapore",
                 department : "Technology",
-                position : "Executive"
+                position : "Executive",
+                bankAccount: "777-11111-1",
+                salary : "4200"
             }
         ]
 
+        // Simulation Purposes
         for (let i = 0; i < users.length; i++) {
             users[i].docType = 'userInformation';
             await ctx.stub.putState('USER' + i, Buffer.from(JSON.stringify(users[i])));
         }
+        
+        const bankAccounts = [
+            {
+                id : "ID000",
+                accountNo : "000-00000-0",
+                balance : "500000"
+            },{
+                id : "ID001",
+                accountNo : "111-11111-1",
+                balance : "3000"
+            },{
+                id : "ID002",
+                accountNo : "222-11111-1",
+                balance : "4000"
+            },{
+                id : "ID003",
+                accountNo : "333-11111-1",
+                balance : "5000"
+            },{
+                id : "ID004",
+                accountNo : "444-11111-1",
+                balance : "6000"
+            },{
+                id : "ID005",
+                accountNo : "555-11111-1",
+                balance : "7000"
+            },{
+                id : "ID006",
+                accountNo : "666-11111-1",
+                balance : "6000"
+            },{
+                id : "ID007",
+                accountNo : "777-11111-1",
+                balance : "5000"
+            }
+        ]
 
+        for (let i = 0; i < bankAccounts.length; i++) {
+            bankAccounts[i].docType = 'bankAccount';
+            await ctx.stub.putState('BANKACCOUNT' + i, Buffer.from(JSON.stringify(bankAccounts[i])));
+        }
     }
 
     async queryLeave(ctx, leaveNumber) {
@@ -189,8 +251,6 @@ class LeaveBalance extends Contract {
 }
 
 class LeaveApplication extends Contract {
-
-    async initLedger( ctx ) { }
 
     /*
      * Creating a leave application submitted by an employee

@@ -1,9 +1,8 @@
 'use strict'
 
-const 
-	LocalStrategy = require('passport-local'),
-	fs = require('fs'),
-	path = require('path');
+const LocalStrategy = require('passport-local');
+const UserService = require('../services/user');
+const userService = new UserService();
 
 function AuthenticationController() {}
 
@@ -11,22 +10,24 @@ AuthenticationController.prototype.strategy = () => {
 
 	const strategy = new LocalStrategy(
 
-		function( username, password, done ) {
+	 	async function( username, password, done ) {
 
-				const userPath = path.resolve(__dirname, '..' , '..' , 'users.json');
-				const userList = fs.readFileSync(userPath, 'utf8');
-				const users = JSON.parse(userList);
+				const users =  await userService.queryAllEmployees();
 
 				let user = null;
 
-				for( let i = 0; i < users['users'].length; i++ ){
-					if(users['users'][i].username == username && users['users'][i].password == password ) {
-						user = users['users'][i];
+				for( let i = 0; i < users.length; i++ ){
+
+					if(users[i].username == username && users[i].password == password ) {
+						user = users[i];
 						break;
 					}
 				}
+
+				console.log(user);
 				return done(null, user);
 		  }
+
 	);
 
 	return strategy;

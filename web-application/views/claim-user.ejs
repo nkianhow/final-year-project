@@ -1,0 +1,39 @@
+<% include partials/header %>
+
+<div class="jumbotron" style="text-align:center;">
+  <h1>My Claims</h1> 
+</div>
+
+	<div class = "container">
+		<table class="table table-dark" style="text-align:center;">
+
+			<!-- Define name of each column -->
+			<thead>
+				<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Name</th>
+				<th scope="col">Department</th>
+				<th scope="col">Claim Type</th>
+				<th scope="col">Claim Amount</th>
+				<th scope="col">Status</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				
+					<% for ( let i = 0; i < claims.length; i++ ) { %>
+						<tr>
+							<td> <%= claims[i]['Record']['id'] %></td>
+							<td> <%= claims[i]['Record']['name'] %></td>
+							<td> <%= claims[i]['Record']['department'] %></td>
+							<td> <%= claims[i]['Record']['claimType'] %></td>
+							<td> <%= claims[i]['Record']['claimAmount'] %></td>
+							<td> <%= claims[i]['Record']['status'] %></td>
+						</tr> 
+					<% }; %>
+				
+			</tbody>
+		</table>
+	</div>
+
+<% include partials/footer %>

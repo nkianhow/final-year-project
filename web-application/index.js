@@ -15,7 +15,9 @@ const
 	Fabric = require('./fabric/service'),
 	AuthenticationController = require('./src/controllers/authentication'),
 	LeaveController = require('./src/controllers/leave'),
-	AppraisalController = require('./src/controllers/appraisal');
+	AppraisalController = require('./src/controllers/appraisal'),
+	ClaimController = require('./src/controllers/claim'),
+	UserController = require('./src/controllers/user');
 
 // define session configuration 
 const sessionConfig = {
@@ -29,7 +31,9 @@ const
 	fabric = new Fabric(),
 	authenticationController = new AuthenticationController(),
 	leaveController = new LeaveController(),
-	appraisalController = new AppraisalController();
+	appraisalController = new AppraisalController(),
+	claimController = new ClaimController(),
+	userController = new UserController();
 
 // define configuration used in application
 app.set( 'view engine' , 'ejs' );
@@ -76,11 +80,25 @@ app.post('/leave/update',leaveController.updateLeaveApplicationStatus );
 
 app.get('/appraisal', appraisalController.queryAllEmployeesByDepartment );
 app.post('/appraisal', appraisalController.submitAppraisal ); 
+app.get('/appraisal/all', appraisalController.queryAllForms )
 app.post('/appraisal/form', appraisalController.getEmployeeForm );
 app.get('/appraisal/generate', appraisalController.generateForms );
 
+app.get('/claim/form', ( req , res ) => { res.render('claim-form'); });
+app.post('/claim/submit', claimController.submitClaim );
+app.get('/claim/user', claimController.queryUserClaim );
+app.get('/claim', claimController.queryPendingClaims );
+app.post('/claim/update', claimController.updateClaimStatus );
+app.get('/claim/reimbursement' , claimController.reimburseClaims );
+
+app.get('/user', userController.queryUserInformation );
+app.post('/user/address' , userController.updateAddress );
+app.get('/user/password', userController.queryUserAccountInformation );
+app.post('/user/password', userController.updatePassword );
+app.get('/user/bank', userController.queryUserBankAccount );
+
 app.listen( port , async () =>{
-	await fabric.enrollAdmin();
-	await fabric.registerUser();
+	// await fabric.enrollAdmin();
+	// await fabric.registerUser();
 	console.log( 'Server is up! Listening at port: ' + port ); 
 });

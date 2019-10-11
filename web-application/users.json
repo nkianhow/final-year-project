@@ -12,21 +12,21 @@
 				"password" : "password",
 				"name" : "Shawn Tan",
 				"address" : "1, Genting Link #03-03, Perfect Ind Bldg Singapore 349518, Singapore",
-				"department" : "Manufacturing",
+				"department" : "Finance",
 				"position" : "VP"
 			},{
 				"username" : "james",
 				"password" : "password",
 				"name" : "James Yeo",
 				"address" : "6 Battery Road #22-00 6 Battery Road, 049909, Singapore",
-				"department" : "Manufacturing",
+				"department" : "Finance",
 				"position" : "Executive"
 			},{
 				"username" : "alex",
 				"password" : "password",
 				"name" : "Alex Wong",
 				"address" : "396 Alexandra Road #03-06 BP TOWER, 119954, Singapore",
-				"department" : "Manufacturing",
+				"department" : "Finance",
 				"position" : "Executive"
 			},{
 				"username" : "brandon",
@@ -50,6 +50,5 @@
 				"department" : "Technology",
 				"position" : "Executive"
 			}
-
 	]
 }

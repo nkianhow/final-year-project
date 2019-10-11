@@ -15,7 +15,6 @@ LeaveController.prototype.queryApplicationByUsername = async ( req , res ) => {
 
 	const username = req.user.username;
 	const userApplications = await leaveApplicationService.queryByUsername( username );
-	console.log(userApplications);
 
 	res.render('view-leave-application', { leaveApplications : userApplications });
 }

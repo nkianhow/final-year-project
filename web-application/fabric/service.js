@@ -118,6 +118,64 @@ FabricService.prototype.registerUser = async function() {
     }
 }
 
+FabricService.prototype.queryByIndex = async ( contractName , queryType , key ) => {
+
+    try {
+
+        // Create a new file system based wallet for managing identities.
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+
+        /**
+         * Check to see if we've already enrolled the user.
+         *
+         * @param {String} username created/defined in the wallet
+         */
+        const userExists = await wallet.exists('user1');
+
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        // Create a new gateway for connecting to our peer node.
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, { wallet , identity: 'user1', discovery: { enabled: true, asLocalhost: true } });
+        /**
+         * Get the network (channel) our contract is deployed to.
+         *
+         * @param {String} name of network/channel
+         */
+        const network = await gateway.getNetwork('mychannel');
+
+
+        /**
+         * Get the contract instantiated in the network
+         *
+         * @param {String} name of the chaincode instantiated in the channel
+         * @param {String} name of the contract instantiated in the channel
+         */
+        const contract = network.getContract('leave', contractName );
+
+        /*
+         * Evaluate the specified transaction
+         * @param {String} name of the method within the specified contract
+         *
+         * @return {Buffer} results returned in buffer format
+         */
+        const result = await contract.evaluateTransaction( queryType , key );
+
+        const resultJSON = JSON.parse( result );
+
+        return resultJSON;
+
+    } catch (error) {
+        console.error(`Failed to evaluate transaction: ${error}`);
+        process.exit(1);
+    }
+}
+
 FabricService.prototype.queryAllPendingApplications = async function() {
 
     try {
@@ -250,64 +308,6 @@ FabricService.prototype.createLeaveApplication = async ( username , key , name ,
 
         console.error( `Failed to submit transaction: ${error}` );
 
-    }
-}
-
-FabricService.prototype.queryByIndex = async ( contractName , queryType , key ) => {
-
-    try {
-
-        // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = new FileSystemWallet(walletPath);
-
-        /**
-         * Check to see if we've already enrolled the user.
-         *
-         * @param {String} username created/defined in the wallet
-         */
-        const userExists = await wallet.exists('user1');
-
-        if (!userExists) {
-            console.log('An identity for the user "user1" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
-            return;
-        }
-
-        // Create a new gateway for connecting to our peer node.
-        const gateway = new Gateway();
-        await gateway.connect(ccpPath, { wallet , identity: 'user1', discovery: { enabled: true, asLocalhost: true } });
-        /**
-         * Get the network (channel) our contract is deployed to.
-         *
-         * @param {String} name of network/channel
-         */
-        const network = await gateway.getNetwork('mychannel');
-
-
-        /**
-         * Get the contract instantiated in the network
-         *
-         * @param {String} name of the chaincode instantiated in the channel
-         * @param {String} name of the contract instantiated in the channel
-         */
-        const contract = network.getContract('leave', contractName );
-
-        /*
-         * Evaluate the specified transaction
-         * @param {String} name of the method within the specified contract
-         *
-         * @return {Buffer} results returned in buffer format
-         */
-        const result = await contract.evaluateTransaction( queryType , key );
-
-        const resultJSON = JSON.parse( result );
-
-        return resultJSON;
-
-    } catch (error) {
-        console.error(`Failed to evaluate transaction: ${error}`);
-        process.exit(1);
     }
 }
 
@@ -467,7 +467,7 @@ FabricService.prototype.query = async function( contractName , queryType ) {
 
 FabricService.prototype.updateAppraisalForm = async function( key , comments , promotion ) {
 
-     try { 
+    try { 
 
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
@@ -501,6 +501,246 @@ FabricService.prototype.updateAppraisalForm = async function( key , comments , p
         console.error( `Failed to submit transaction: ${error}` );
 
     }
+}
+
+FabricService.prototype.submitClaim = async ( key , id, name , department , claimType , claimAmount ) => {
+
+    try { 
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'Claim');
+
+        await contract.submitTransaction('createClaim', key , id , name , department , claimType , claimAmount );
+
+    } catch( error ) {
+
+        console.error( `Failed to submit transaction: ${error}` );
+
+    }
+
+}
+
+FabricService.prototype.queryAllClaims = async () => {
+
+    try { 
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'Claim');
+
+        const result = await contract.evaluateTransaction('queryAllClaims');
+
+        const resultJSON = JSON.parse( result );
+
+        return resultJSON;
+
+    } catch( error ) {
+
+        console.error( `Failed to submit transaction: ${error}` );
+
+    }
+}
+
+FabricService.prototype.updateClaimStatus = async ( key , newStatus ) => {
+
+     try {
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'Claim');
+
+        await contract.submitTransaction('updateClaimStatus', key , newStatus );
+
+     }
+     catch( error ){
+
+        console.log(error);
+
+     }
+}
+
+FabricService.prototype.updateAddress = async ( key , newAddress ) => {
+
+    try {
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'User');
+
+        await contract.submitTransaction('updateAddress', key , newAddress );
+
+     }
+     catch( error ){
+
+        console.log(error);
+
+     }
+
+}
+
+FabricService.prototype.updatePassword = async ( key , newPassword ) => {
+
+    try {
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'User');
+
+        await contract.submitTransaction('updatePassword', key , newPassword );
+
+     }
+     catch( error ){
+
+        console.log(error);
+
+     }
+
+}
+
+FabricService.prototype.updateAccountBalance = async ( key , newBalance ) => {
+
+    try {
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'BankAccount');
+
+        await contract.submitTransaction('updateAccountBalance', key , newBalance );
+
+     }
+     catch( error ){
+
+        console.log(error);
+
+     }
+
 }
 
 module.exports = FabricService;

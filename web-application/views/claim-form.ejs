@@ -1,0 +1,34 @@
+<% include partials/header %>
+
+<!-- Show render user information such as name and role -->
+<div class="jumbotron" style="text-align:center;">
+  <h1> Claim Form </h1> 
+</div>
+
+<div class = "container">
+
+    <form action='/claim/submit' method="POST">
+       
+        <div class="form-group">
+            <label for="claimTypeDropdown">Claim Type:</label>
+            <select class="form-control" id="claimTypeDropdown" name="claimType">
+                <option>Transportation</option>
+                <option>Entertainment</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="claimAmount">Claim Amount:</label>
+            <input type="text" class="form-control" id="claimAmount" name="claimAmount" placeholder="Enter the amount here...">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+</div>
+
+<script>
+</script>
+
+<% include partials/footer %>
