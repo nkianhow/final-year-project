@@ -11,12 +11,12 @@ function LeaveController() {}
 /**
  * Query leave application status by employee
  */
-LeaveController.prototype.queryApplicationByUsername = async ( req , res ) => {
+LeaveController.prototype.queryLeaveApplicationByUserId = async ( req , res ) => {
 
-	const username = req.user.username;
-	const userApplications = await leaveApplicationService.queryByUsername( username );
+	const id = req.user.id;
+	const userApplications = await leaveApplicationService.queryLeaveApplicationByUserId( id );
 
-	res.render('view-leave-application', { leaveApplications : userApplications });
+	res.render('leave-application-user', { leaveApplications : userApplications });
 }
 
 /**
@@ -27,7 +27,7 @@ LeaveController.prototype.queryReviewedApplicationsByDepartment = async ( req , 
 	const department = req.user.department;
 	const userApplications = await leaveApplicationService.queryReviewedApplicationsByDepartment( department );
 
-	res.render('view-leave-application' , { leaveApplications : userApplications });
+	res.render('leave-application' , { leaveApplications : userApplications });
 }
 
 /**
@@ -38,7 +38,7 @@ LeaveController.prototype.queryAllPendingApplications = async ( req , res ) => {
 
 	const applications = await leaveApplicationService.queryAllPendingApplications();
 
-	res.render('view-leave-application', { leaveApplications : applications });
+	res.render('leave-application', { leaveApplications : applications });
 }
 
 /**
@@ -71,21 +71,31 @@ LeaveController.prototype.updateLeaveApplicationStatus = async ( req , res ) => 
 
 	const
 		key = req.body.key,
+		id = req.body.id,
 		approval = req.body.approval,
 		currentStatus = req.body.status;
 
 	if( approval == 'reject') {
-		await leaveApplicationService.rejectLeaveApplication( key );
+		await leaveApplicationService.updateLeaveApplicationStatus( key , 'REJECTED');
 	} else {
 		if ( currentStatus == 'PENDING' ){
-			await leaveApplicationService.reviewLeaveApplication( key );
+			await leaveApplicationService.updateLeaveApplicationStatus( key , 'REVIEWED');
 		} else {
-			await leaveApplicationService.approveLeaveApplication( key );
-			// await leaveBalanceService.deductLeaveBalance();
+			await leaveApplicationService.updateLeaveApplicationStatus( key , 'APPROVED');
+			const leaveBalance = await leaveBalanceService.queryLeaveBalanceByUserId( id );
+			const noOfDays = req.body.noOfDays;
+			await leaveBalanceService.deductLeaveBalance( leaveBalance , noOfDays );
 		}
 	}
 	
 	res.redirect('/');
+}
+
+LeaveController.prototype.queryLeaveBalanceByUserId = async ( req , res ) => {
+
+	const leaveBalance = await leaveBalanceService.queryLeaveBalanceByUserId( req.user.id );
+
+	res.render('leave-form' , { leaveBalance : leaveBalance });
 }
 
 /**

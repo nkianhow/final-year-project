@@ -39,6 +39,22 @@
                         View Leave Status 
                     </a> 
                 </li>
+
+                <% if (user['department'] === 'Human Resources' ) { %>
+                    <li class="list-group-item"> 
+                        <a href="/leave/pending"> 
+                            Review Pending Leave
+                        </a> 
+                    </li>
+                <% } %>
+
+                <% if (user['position'] === 'VP' ) { %>
+                    <li class="list-group-item"> 
+                        <a href="/leave/reviewed"> 
+                            Approve Leaves
+                        </a> 
+                    </li>
+                <% } %>
             </ul>
         </div>
 
@@ -96,6 +112,11 @@
                         Write Appraisal Report
                     </a>
                 </li>
+                <li class="list-group-item">
+                    <a href="/appraisal/reports/department"> 
+                        View Department's Reports
+                    </a>
+                </li>
                 <% } %>
                 
                 <% if (user['department'] === 'Human Resources' ) { %>
@@ -105,11 +126,12 @@
                         </a> 
                     </li>
                     <li class="list-group-item"> 
-                        <a href="/appraisal/all"> 
+                        <a href="/appraisal/reports"> 
                             View All Reports
                         </a> 
                     </li>
                 <% } %>
+
             </ul>
         </div>
 

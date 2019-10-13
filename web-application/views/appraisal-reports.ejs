@@ -1,0 +1,38 @@
+<% include partials/header %>
+
+<div class="jumbotron" style="text-align:center;">
+  <h1>View Appraisal Reports</h1> 
+</div>
+
+	<div class = "container">
+		<table class="table table-dark" style="text-align:center;">
+
+			<!-- Define name of each column -->
+			<thead>
+				<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Department</th>
+				<th scope="col">Position</th>
+				<th scope="col">Status</th>
+				<th scope="col">Comments</th>
+				<th scope="col">Promoted</th>
+			</thead>
+
+			<tbody>
+				
+					<% for ( let i = 0; i < employees.length; i++ ) { %>
+						<tr>
+							<td> <%= employees[i]['Record']['name'] %></td>
+							<td> <%= employees[i]['Record']['department'] %></td>
+							<td> <%= employees[i]['Record']['position'] %></td>
+							<td> <%= employees[i]['Record']['status'] %></td>
+							<td> <%= employees[i]['Record']['comments'] %></td>
+							<td> <%= employees[i]['Record']['promotion'] %></td>
+						</tr> 
+					<% }; %>
+				
+			</tbody>
+		</table>
+	</div>
+
+<% include partials/footer %>

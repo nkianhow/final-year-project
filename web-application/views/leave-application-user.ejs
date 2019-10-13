@@ -15,11 +15,8 @@
 				<th scope="col">Name</th>
 				<th scope="col">Start Date</th>
 				<th scope="col">End Date</th>
+				<th scope="col"># of Days</th>
 				<th scope="col">Status</th>
-				<% if ( user.position === "VP" || user.department === "Human Resources" ) { %>
-					<th scope="col">Action</th>
-				<% }; %>
-				</tr>
 			</thead>
 
 			<tbody>
@@ -31,17 +28,8 @@
 							<td> <%= leaveApplications[i]['Record']['name'] %></td>
 							<td> <%= leaveApplications[i]['Record']['startDate'] %></td>
 							<td> <%= leaveApplications[i]['Record']['endDate'] %></td>
+							<td> <%= leaveApplications[i]['Record']['noOfDays'] %></td>
 							<td> <%= leaveApplications[i]['Record']['status'] %></td>
-							<td>
-								<% if ( user.position === "VP" || user.department === "Human Resources" ) { %>
-								<form action="/leave/update" method="POST">
-									<input type="hidden" name="key" value= <%= leaveApplications[i]['Key']%> >
-									<input type="hidden" name="status" value= <%= leaveApplications[i]['Record']['status']%> >
-									<input type="submit" name="approval" value="approve">
-									<input type="submit" name="approval" value="reject">
-								</form>
-								<% } %>
-							</td>
 						</tr> 
 					<% }; %>
 				

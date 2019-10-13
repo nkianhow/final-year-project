@@ -42,7 +42,7 @@
         <div class="form-group row">
             <div class="col">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="promoted" id="promoted">
+                  <input class="form-check-input" type="checkbox" id="checkbox">
                   <label class="form-check-label" for="promoted">
                     Promote Employee
                   </label>
@@ -50,6 +50,7 @@
             </div>
         </div>
 
+        <input type="hidden" id="promoted" name="promoted" value="false" />
         <input type="hidden" name="key" value="<%= employee['key'] %>">
         <input type="hidden" name="name" value="<%= employee['name'] %>">
         <input type="hidden" name="position" value="<%= employee['position'] %>">
@@ -60,13 +61,14 @@
 </div>
 
 <script>
-    let checkbox = document.getElementById('promoted');
+    let checkbox = document.getElementById('checkbox');
+    let promoted = document.getElementById('promoted');
     checkbox.addEventListener('click', function() {
         
         if(checkbox.checked) {
-            checkbox.value = true;
+            promoted.value = true;
         } else {
-            checkbox.value = false;
+            promoted.value = false;
         }
         console.log(checkbox.value);
     });

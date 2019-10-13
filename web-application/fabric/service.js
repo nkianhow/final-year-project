@@ -273,7 +273,7 @@ FabricService.prototype.updateLeaveApplicationStatus = async ( key , newStatus )
      }
 }
 
-FabricService.prototype.createLeaveApplication = async ( username , key , name , department , startDate, endDate ) => {
+FabricService.prototype.createLeaveApplication = async ( key , id , name , department , startDate, endDate , noOfDays ) => {
 
     try { 
 
@@ -302,7 +302,7 @@ FabricService.prototype.createLeaveApplication = async ( username , key , name ,
         const network = await gateway.getNetwork('mychannel');
         const contract = network.getContract('leave', 'LeaveApplication');
 
-        await contract.submitTransaction('createLeaveApplication', key , username , name , department , startDate, endDate);
+        await contract.submitTransaction('createLeaveApplication', key , id , name , department , startDate, endDate, noOfDays );
 
     } catch( error ) {
 
@@ -733,6 +733,46 @@ FabricService.prototype.updateAccountBalance = async ( key , newBalance ) => {
         const contract = network.getContract('leave', 'BankAccount');
 
         await contract.submitTransaction('updateAccountBalance', key , newBalance );
+
+     }
+     catch( error ){
+
+        console.log(error);
+
+     }
+
+}
+
+FabricService.prototype.updateLeaveBalance = async ( key , newBalance ) => {
+
+    try {
+
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+
+        const userExists = await wallet.exists('user1');
+        if (!userExists) {
+            console.log('An identity for the user "user1" does not exist in the wallet');
+            console.log('Run the registerUser.js application before retrying');
+            return;
+        }
+
+        const userIdentity = {
+            wallet,
+            identity : 'user1',
+            discovery : {
+                enabled : true,
+                asLocalhost : true
+            }
+        };
+        const gateway = new Gateway();
+        await gateway.connect(ccpPath, userIdentity);
+
+        const network = await gateway.getNetwork('mychannel');
+        const contract = network.getContract('leave', 'LeaveBalance');
+
+        await contract.submitTransaction('updateLeaveBalance', key , newBalance );
 
      }
      catch( error ){

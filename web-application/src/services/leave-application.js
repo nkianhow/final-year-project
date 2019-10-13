@@ -13,11 +13,11 @@ LeaveApplicationService.prototype.key = 0;
  *
  * @return {Object[]} array of leave applications
  */
-LeaveApplicationService.prototype.queryByUsername = async ( username ) => {
+LeaveApplicationService.prototype.queryLeaveApplicationByUserId = async ( userId ) => {
 
 	const contractName = "LeaveApplication";
-	const queryType = "queryByUsername";
-	const key = username;
+	const queryType = "queryByUserId";
+	const key = userId;
 
 	const result = await fabric.queryByIndex( contractName, queryType , key );
 
@@ -60,35 +60,24 @@ LeaveApplicationService.prototype.queryAllPendingApplications = async () => {
  */
 LeaveApplicationService.prototype.createLeaveApplication = async ( userCtx , applicationCtx ) => {
 
+	const key = LeaveApplicationService.prototype.key.toString();
 	const startDate = applicationCtx.startDate;
 	const endDate = applicationCtx.endDate;
-	const username = userCtx.username;
+	const noOfDays = applicationCtx.noOfDays;
+	const id = userCtx.id;
 	const department = userCtx.department;
 	const name = userCtx.name;
-	const key = LeaveApplicationService.prototype.key.toString();
 
-	await fabric.createLeaveApplication( username , key , name , department , startDate , endDate );
+	console.log(key + ' ' + id + ' ' + name + ' ' + department + ' ' + startDate + ' ' + endDate + ' ' + noOfDays );
+	
+	await fabric.createLeaveApplication( key , id , name , department , startDate , endDate , noOfDays );
 	LeaveApplicationService.prototype.key++;
 	
 }
 
+LeaveApplicationService.prototype.updateLeaveApplicationStatus = async ( key , newStatus ) => {
 
-LeaveApplicationService.prototype.reviewLeaveApplication = async ( key ) => {
-
-	await fabric.updateLeaveApplicationStatus( key , 'REVIEWED' );
-
-}
-
-LeaveApplicationService.prototype.approveLeaveApplication = async ( key ) => {
-
-	await fabric.updateLeaveApplicationStatus( key , 'APPROVED' );
-
-}
-
-LeaveApplicationService.prototype.rejectLeaveApplication = async ( key ) => {
-
-	await fabric.updateLeaveApplicationStatus( key , 'REJECTED' ); 
-
+	await fabric.updateLeaveApplicationStatus( key , newStatus );
 }
 
 

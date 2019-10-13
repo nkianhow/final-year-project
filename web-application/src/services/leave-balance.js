@@ -22,7 +22,15 @@ LeaveBalanceService.prototype.queryAllLeaveBalances = async () => {
  * Deduct the number of leaves taken by employee
  *
  */
-LeaveBalanceService.prototype.deductLeaveBalance = async () => {
+LeaveBalanceService.prototype.deductLeaveBalance = async ( leaveBalance , noOfDays ) => {
+
+	const key = leaveBalance.Key;
+	const currentBalance = parseInt(leaveBalance.Record.annualLeave);
+	const deductible = parseInt(noOfDays);
+	const remainder = currentBalance - deductible;
+
+	console.log(remainder);
+	await fabric.updateLeaveBalance( key , remainder.toString() );
 
 }
 
@@ -31,6 +39,20 @@ LeaveBalanceService.prototype.deductLeaveBalance = async () => {
  *
  */
 LeaveBalanceService.prototype.createLeaveBalance = async () => {
+
+}
+
+/**
+ * Query the remaining number of leave of employee
+ */
+LeaveBalanceService.prototype.queryLeaveBalanceByUserId = async ( userId ) => {
+
+	const contractName = "LeaveBalance";
+	const queryType = "queryByUserId";
+	const result = await fabric.queryByIndex( contractName , queryType , userId );
+
+	console.log(result);
+	return result[0];
 
 }
 

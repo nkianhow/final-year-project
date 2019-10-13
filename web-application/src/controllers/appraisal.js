@@ -23,6 +23,8 @@ AppraisalController.prototype.submitAppraisal = async ( req , res ) => {
 		comments = req.body.comments,
 		promotion = req.body.promoted;
 
+	console.log(req.body.promoted);
+
 	await appraisalService.submitAppraisal( key , comments , promotion );
 
 	res.redirect('/appraisal');
@@ -51,7 +53,7 @@ AppraisalController.prototype.queryAllEmployeesByDepartment = async ( req , res 
 
 	const department = req.user.department;
 
-	const result = await appraisalService.queryByDepartment( department );
+	const result = await appraisalService.queryAppraisalsByDepartment( department );
 
 	res.render('appraisal' , { employees : result } );
 
@@ -61,7 +63,16 @@ AppraisalController.prototype.queryAllForms = async ( req , res ) => {
 	
 	const result = await appraisalService.queryAllForms();
 
-	res.render('appraisal' , { employees : result } );
+	res.render('appraisal-reports' , { employees : result } );
+}
+
+AppraisalController.prototype.queryReportsByDepartment = async ( req , res ) => {
+
+	const department = req.user.department;
+
+	const result = await appraisalService.queryAppraisalsByDepartment( department );
+
+	res.render('appraisal-reports' , { employees : result } );
 }
 
 module.exports = AppraisalController;

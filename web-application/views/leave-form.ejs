@@ -1,0 +1,106 @@
+<% include partials/header %>
+
+<!-- Show render user information such as name and role -->
+<div class="jumbotron" style="text-align:center;">
+  <h1>Leave Application</h1> 
+</div>
+
+<div class="container">
+	<form action="/leave/apply" method="POST">
+
+        <div class="form-group row">
+            <div class="col-sm">
+                <span>Leave Balance: <%= leaveBalance['Record']['annualLeave'] %> %></span>
+            </div>
+        </div>
+
+		<div class="form-group row">
+			<div class="col-md-1">
+				<label for="startDate">From</label>
+			</div>
+			<div class="input-group date col-md-5" id="startDate" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#startDate" id="inputStartDate" placeholder="MM/DD/YYYY" name="startDate"/>
+                <div class="input-group-append" data-target="#startDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-1">
+            	<label for="endDate">To</label>
+        	</div>
+            <div class="input-group date col-md-5" id="endDate" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#endDate" id="inputEndDate" placeholder="MM/DD/YYYY" name="endDate"/>
+                <div class="input-group-append" data-target="#endDate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+		</div>
+        <input type="hidden" id="leaveBalance" value="<%= leaveBalance['Record']['annualLeave'] %>">
+        <input type="hidden" id="noOfDays" name="noOfDays">
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
+
+<!--
+Work on disabling the days before
+Work on changing the date format -> DD/MM/YYYY 
+-->
+<script type = "text/javascript">
+	$( function () {
+        $('#startDate').datetimepicker({
+            minDate: new Date(),
+            format: 'L'
+        });
+    });
+    $( function () {
+        $('#endDate').datetimepicker({
+            minDate: new Date(),
+            format: 'L'
+        });
+    });
+
+    const inputStartDate = document.getElementById('inputStartDate');
+    const inputEndDate = document.getElementById('inputEndDate');
+    const leaveBalance = document.getElementById('leaveBalance');
+    let noOfDays = document.getElementById('noOfDays');
+
+    console.log(leaveBalance.value);
+
+    let dayDifference = 0;
+
+    inputStartDate.addEventListener('blur' , function() {
+        if (inputStartDate.value !== '' && inputEndDate.value !== '') {
+            
+            const date1 = new Date(inputStartDate.value);
+            const date2 = new Date(inputEndDate.value);
+            const diffTime = Math.abs(date2 - date1);
+            dayDifference = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+
+            console.log(dayDifference);
+
+            if( dayDifference <= leaveBalance.value ) {
+                noOfDays.value = dayDifference;
+            }
+
+        }
+    })
+
+    inputEndDate.addEventListener('blur' , function() {
+        if (inputStartDate.value !== '' && inputEndDate.value !== '') {
+            const date1 = new Date(inputStartDate.value);
+            const date2 = new Date(inputEndDate.value);
+            const diffTime = Math.abs(date2 - date1);
+            dayDifference = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+
+            console.log(dayDifference);
+
+            if( dayDifference <= leaveBalance.value ) {
+                noOfDays.value = dayDifference;
+            }
+        }
+    })
+</script>
+
+
+<% include partials/footer %>
